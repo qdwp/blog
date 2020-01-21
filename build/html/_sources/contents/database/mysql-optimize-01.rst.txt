@@ -227,9 +227,9 @@ SQL执行语句
 慢查询日志分析工具：``pt-query-digest``
 ---------------------------------------------
 
-附工具`下载地址 <https://www.percona.com/doc/percona-toolkit/2.1/installation.html>`_。
+附工具 `下载地址 <https://www.percona.com/doc/percona-toolkit/2.1/installation.html>`_。
 
-安装 pt-* percona工具
+安装 pt-* percona 工具
 
 ::
 

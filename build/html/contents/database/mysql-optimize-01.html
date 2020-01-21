@@ -16,7 +16,7 @@
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="搜索" href="../../search.html" />
     <link rel="next" title="2. MySQL 性能优化笔记[2]" href="mysql-optimize-02.html" />
-    <link rel="prev" title="数据库专栏" href="../../idx/database.html" />
+    <link rel="prev" title="数据库专栏" href="../../category/database.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -226,8 +226,8 @@ mysql&gt; show tables;
 </div>
 <div class="section" id="pt-query-digest">
 <h3>1.3.5. 慢查询日志分析工具：<code class="docutils literal notranslate"><span class="pre">pt-query-digest</span></code><a class="headerlink" href="#pt-query-digest" title="永久链接至标题">¶</a></h3>
-<p>附工具`下载地址 &lt;<a class="reference external" href="https://www.percona.com/doc/percona-toolkit/2.1/installation.html">https://www.percona.com/doc/percona-toolkit/2.1/installation.html</a>&gt;`_。</p>
-<p>安装 pt-* percona工具</p>
+<p>附工具 <a class="reference external" href="https://www.percona.com/doc/percona-toolkit/2.1/installation.html">下载地址</a>。</p>
+<p>安装 pt-* percona 工具</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shell</span><span class="o">&gt;</span> <span class="n">wget</span> <span class="n">percona</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">get</span><span class="o">/</span><span class="n">percona</span><span class="o">-</span><span class="n">toolkit</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
 <span class="n">shell</span><span class="o">&gt;</span> <span class="n">tar</span> <span class="o">-</span><span class="n">zxvf</span> <span class="n">percona</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">get</span><span class="o">/</span><span class="n">percona</span><span class="o">-</span><span class="n">toolkit</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
 </pre></div>
@@ -286,8 +286,8 @@ mysql&gt; show tables;
 </pre></div>
 </div>
 </div>
-<div class="section" id="id6">
-<h3>1.3.6. 如何通过慢查询日志发现有问题的SQL？<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h3>
+<div class="section" id="id7">
+<h3>1.3.6. 如何通过慢查询日志发现有问题的SQL？<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h3>
 <ol class="arabic simple">
 <li><p>查询次数多且每次查询占用时间长的SQL
 通常为 <code class="docutils literal notranslate"><span class="pre">pt-query-digest</span></code> 分析的前几个查询</p></li>
@@ -390,8 +390,8 @@ mysql&gt; show tables;
 </div>
 <p>NULL 在 COUNT查询时，会被略过查询，忽略扫描不需要的数据行</p>
 </div>
-<div class="section" id="id7">
-<h3>1.3.9. 子查询的优化<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h3>
+<div class="section" id="id8">
+<h3>1.3.9. 子查询的优化<a class="headerlink" href="#id8" title="永久链接至标题">¶</a></h3>
 <p>子查询一般使用 JOIN 优化成表连接的形式，但是要注意，使用 JOIN 时，如果出现数据重复，需要使用 distinct 来去除重复的数据行</p>
 </div>
 <div class="section" id="group-by">
@@ -528,10 +528,10 @@ mysql&gt; show tables;
 <p>如果使用排序查询的主键是 <strong>整数且连续递增</strong> 的，在分页查询的时候，使用 WHERE 条件进行过滤，会减少表扫描的行数。但是使用这中方式，是有限制的，需要使用查询的主键必须是 <strong>整数且连续递增</strong> 的.</p>
 </div>
 </div>
-<div class="section" id="id8">
-<h2>1.4. 索引优化<a class="headerlink" href="#id8" title="永久链接至标题">¶</a></h2>
 <div class="section" id="id9">
-<h3>1.4.1. 如何选择合适的列建立索引<a class="headerlink" href="#id9" title="永久链接至标题">¶</a></h3>
+<h2>1.4. 索引优化<a class="headerlink" href="#id9" title="永久链接至标题">¶</a></h2>
+<div class="section" id="id10">
+<h3>1.4.1. 如何选择合适的列建立索引<a class="headerlink" href="#id10" title="永久链接至标题">¶</a></h3>
 <ol class="arabic">
 <li><p>在 <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> 从句， <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> 从句， <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> 从句， <code class="docutils literal notranslate"><span class="pre">OR</span></code> 从句中出现的列</p></li>
 <li><p>索引字段越小越好</p></li>
@@ -541,8 +541,8 @@ mysql&gt; show tables;
 </li>
 </ol>
 </div>
-<div class="section" id="id10">
-<h3>1.4.2. 索引优化SQL的方法<a class="headerlink" href="#id10" title="永久链接至标题">¶</a></h3>
+<div class="section" id="id11">
+<h3>1.4.2. 索引优化SQL的方法<a class="headerlink" href="#id11" title="永久链接至标题">¶</a></h3>
 <ol class="arabic simple">
 <li><p>建立索引可以提高查询的效率，但是，过多的索引会影响数据库写入的效率。  同时，也可能会影响查询时索引的选择，从而减低了索引查询本身的高效性</p></li>
 <li><p>删除重复和冗余的索引: 重复索引是指相同的列以相同的顺序建立的同类型的索引。</p></li>
@@ -640,24 +640,24 @@ ALTER TABLE `sakila`.`country` DROP INDEX `idx_cnty`;
 
 <h3>导航</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../idx/golang.html">Golang 专栏</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../category/golang.html">Golang 专栏</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../../idx/database.html">数据库专栏</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../../idx/database.html#mysql">MySQL</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../category/database.html">数据库专栏</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../category/database.html#mysql">MySQL</a></li>
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../idx/book.html">读书笔记</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../category/book.html">读书笔记</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../../idx/database.html">数据库专栏</a><ul>
-      <li>Previous: <a href="../../idx/database.html" title="上一章">数据库专栏</a></li>
+  <li><a href="../../category/database.html">数据库专栏</a><ul>
+      <li>Previous: <a href="../../category/database.html" title="上一章">数据库专栏</a></li>
       <li>Next: <a href="mysql-optimize-02.html" title="下一章">2. MySQL 性能优化笔记[2]</a></li>
   </ul></li>
   </ul></li>

@@ -9,22 +9,22 @@
 DUNWEI’ Blog
 ####################
 
-Golang 专栏
+编程语言
 ====================
 
 .. toctree::
    :maxdepth: 2
 
-   idx/golang
+   category/golang
 
-数据库专栏
+数据库与缓存
 ====================
 
 
 .. toctree::
    :maxdepth: 2
 
-   idx/database
+   category/database
 
 
 读书笔记
@@ -35,7 +35,7 @@ Golang 专栏
 .. toctree::
     :maxdepth: 2
 
-    idx/book
+    category/book
 
 
 .. Indices and tables
