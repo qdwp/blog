@@ -579,7 +579,9 @@ limit 常用于数据的分页处理，经常伴随 ORDER BY 从句使用，因�
 1. 在 ``WHERE`` 从句， ``GROUP BY`` 从句， ``ORDER BY`` 从句， ``OR`` 从句中出现的列
 2. 索引字段越小越好
 3. 离散度大的列放到联合索引的前面
+
    ``SELECT * FROM payment WHERE staff_id = 2 AND customer_id = 584;``
+
    在建立索引时，因为 ``customer_id`` 的离散度更大，索引应该使用联合索引 ``index(customer_id, staff_id)``
 
 索引优化SQL的方法
@@ -594,9 +596,9 @@ limit 常用于数据的分页处理，经常伴随 ORDER BY 从句使用，因�
 ::
 
     create table test(
-        id int not null promary key,		# 指定主键，建立索引
+        id int not null promary key,	# 指定主键，建立索引
         name varchar(10) not null,
-        unique(id)							# 指定唯一键，建立索引
+        unique(id)		# 指定唯一键，建立索引
     )engine=innodb;
 
 冗余索引是指多个索引的前缀列相同，或是在联合索引中包含了主键的索引
@@ -605,9 +607,9 @@ limit 常用于数据的分页处理，经常伴随 ORDER BY 从句使用，因�
 ::
 
     create table test(
-        id int not null promary key,		# 指定主键，建立索引
+        id int not null promary key,	# 指定主键，建立索引
         name varchar(10) not null,
-        key(name, id)						# 指定联合索引
+        key(name, id)       # 指定联合索引
     )engine=innodb;
 
 3. 查看数据库中的重复索引
@@ -665,3 +667,6 @@ limit 常用于数据的分页处理，经常伴随 ORDER BY 从句使用，因�
     # Total Indexes            97
 
 上面的命令输出，会显示表中的重复索引，并显示索引对应的列，以及给定的移除索引建议
+
+
+\ `返回顶部⬆︎ <#>`_\

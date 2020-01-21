@@ -532,12 +532,13 @@ mysql&gt; show tables;
 <h2>1.4. 索引优化<a class="headerlink" href="#id8" title="永久链接至标题">¶</a></h2>
 <div class="section" id="id9">
 <h3>1.4.1. 如何选择合适的列建立索引<a class="headerlink" href="#id9" title="永久链接至标题">¶</a></h3>
-<ol class="arabic simple">
+<ol class="arabic">
 <li><p>在 <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> 从句， <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> 从句， <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> 从句， <code class="docutils literal notranslate"><span class="pre">OR</span></code> 从句中出现的列</p></li>
 <li><p>索引字段越小越好</p></li>
-<li><p>离散度大的列放到联合索引的前面
-<code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">payment</span> <span class="pre">WHERE</span> <span class="pre">staff_id</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">AND</span> <span class="pre">customer_id</span> <span class="pre">=</span> <span class="pre">584;</span></code>
-在建立索引时，因为 <code class="docutils literal notranslate"><span class="pre">customer_id</span></code> 的离散度更大，索引应该使用联合索引 <code class="docutils literal notranslate"><span class="pre">index(customer_id,</span> <span class="pre">staff_id)</span></code></p></li>
+<li><p>离散度大的列放到联合索引的前面</p>
+<p><code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">payment</span> <span class="pre">WHERE</span> <span class="pre">staff_id</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">AND</span> <span class="pre">customer_id</span> <span class="pre">=</span> <span class="pre">584;</span></code></p>
+<p>在建立索引时，因为 <code class="docutils literal notranslate"><span class="pre">customer_id</span></code> 的离散度更大，索引应该使用联合索引 <code class="docutils literal notranslate"><span class="pre">index(customer_id,</span> <span class="pre">staff_id)</span></code></p>
+</li>
 </ol>
 </div>
 <div class="section" id="id10">
@@ -548,18 +549,18 @@ mysql&gt; show tables;
 </ol>
 <p>如下表中 primary key 和在 id 列上建立的索引就是重复索引</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="n">table</span> <span class="n">test</span><span class="p">(</span>
-    <span class="nb">id</span> <span class="nb">int</span> <span class="ow">not</span> <span class="n">null</span> <span class="n">promary</span> <span class="n">key</span><span class="p">,</span>            <span class="c1"># 指定主键，建立索引</span>
+    <span class="nb">id</span> <span class="nb">int</span> <span class="ow">not</span> <span class="n">null</span> <span class="n">promary</span> <span class="n">key</span><span class="p">,</span>    <span class="c1"># 指定主键，建立索引</span>
     <span class="n">name</span> <span class="n">varchar</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="ow">not</span> <span class="n">null</span><span class="p">,</span>
-    <span class="n">unique</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>                                                      <span class="c1"># 指定唯一键，建立索引</span>
+    <span class="n">unique</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>              <span class="c1"># 指定唯一键，建立索引</span>
 <span class="p">)</span><span class="n">engine</span><span class="o">=</span><span class="n">innodb</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>冗余索引是指多个索引的前缀列相同，或是在联合索引中包含了主键的索引
 下面例子中 key(name, id) 就是一个冗余索引</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="n">table</span> <span class="n">test</span><span class="p">(</span>
-    <span class="nb">id</span> <span class="nb">int</span> <span class="ow">not</span> <span class="n">null</span> <span class="n">promary</span> <span class="n">key</span><span class="p">,</span>            <span class="c1"># 指定主键，建立索引</span>
+    <span class="nb">id</span> <span class="nb">int</span> <span class="ow">not</span> <span class="n">null</span> <span class="n">promary</span> <span class="n">key</span><span class="p">,</span>    <span class="c1"># 指定主键，建立索引</span>
     <span class="n">name</span> <span class="n">varchar</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="ow">not</span> <span class="n">null</span><span class="p">,</span>
-    <span class="n">key</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>                                           <span class="c1"># 指定联合索引</span>
+    <span class="n">key</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>       <span class="c1"># 指定联合索引</span>
 <span class="p">)</span><span class="n">engine</span><span class="o">=</span><span class="n">innodb</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -616,6 +617,7 @@ ALTER TABLE `sakila`.`country` DROP INDEX `idx_cnty`;
 </pre></div>
 </div>
 <p>上面的命令输出，会显示表中的重复索引，并显示索引对应的列，以及给定的移除索引建议</p>
+<p><a class="reference external" href="#">返回顶部⬆︎</a></p>
 </div>
 </div>
 </div>
