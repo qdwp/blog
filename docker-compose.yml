@@ -1,0 +1,9 @@
+version: "3"
+services:
+    nginx-book-note:
+        image: nginx:stable-alpine
+        ports:
+            - 8081:80
+        volumes:
+            - $PWD/build/html:/usr/share/nginx/html
+        restart: always

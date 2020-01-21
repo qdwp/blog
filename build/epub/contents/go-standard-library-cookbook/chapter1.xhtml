@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
+  <head>
+    <meta charset="utf-8" />
+    <title>1. 与环境交互</title>
+    <link rel="stylesheet" href="../../_static/epub.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" /> 
+  </head><body>
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="chapter1">
+<span id="id1"></span><h1>1. 与环境交互</h1>
+<p><strong>目录：</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="#golang">检查Golang版本</a></p></li>
+<li><p><a class="reference internal" href="#id5">接收程序参数</a></p></li>
+</ul>
+</div></blockquote>
+<div class="section" id="golang">
+<h2>1.1. 检查Golang版本</h2>
+<p>当构建一个程序，特别是你的应用程序很复杂的时候，最好的实践是输出一下环境设置、构建版本以及运行时版本。这有助于分析问题，防止发生错误。</p>
+<p>除了构建版本以及环境变量以外，用以编译二进制文件的 Go 版本也会包含在打印日志中。接下来的技巧将展示如何将 Go 运行时的版本信息包含到此类程序中。</p>
+<div class="section" id="id2">
+<h3>1.1.1. 准备</h3>
+<p>按照以下步骤安装并校验 Go 安装程序：</p>
+<ol class="arabic simple">
+<li><p>下载并在电脑上安装 Go 程序</p></li>
+<li><p>校验 <code class="docutils literal notranslate"><span class="pre">GOPATH</span></code> 和 <code class="docutils literal notranslate"><span class="pre">GOROOT</span></code> 是否已经正确设置</p></li>
+<li><p>打开终端并执行 <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">version</span></code>，如果看到输出版本信息，那么 Go 已经正确安装了</p></li>
+<li><p>在 <code class="docutils literal notranslate"><span class="pre">GOPATH/src</span></code> 文件夹内创建代码仓库</p></li>
+</ol>
+</div>
+<div class="section" id="id3">
+<h3>1.1.2. 实现</h3>
+<p>以下步骤涵盖了解决方案：</p>
+<ol class="arabic simple">
+<li><p>打开控制台并创建文件夹 <code class="docutils literal notranslate"><span class="pre">chapter01/recipe01</span></code></p></li>
+<li><p>导航到该目录</p></li>
+<li><p>创建 <code class="docutils literal notranslate"><span class="pre">main.go</span></code> 文件并写入以下内容：</p></li>
+</ol>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;log&quot;</span>
+    <span class="s">&quot;runtime&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">const</span> <span class="nx">info</span> <span class="p">=</span> <span class="s">`</span>
+<span class="s">    Application %s starting.</span>
+<span class="s">    The binary was build by GO: %s`</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="nx">info</span><span class="p">,</span> <span class="s">&quot;Example&quot;</span><span class="p">,</span> <span class="nx">runtime</span><span class="p">.</span><span class="nx">Version</span><span class="p">())</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>使用命令 <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">run</span> <span class="pre">main.go</span></code> 运行</p></li>
+<li><p>查看终端输出：</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># output:</span>
+    Application Example starting.
+    The binary was build by GO: go1.11.1
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>1.1.3. 原理</h3>
+<p><code class="docutils literal notranslate"><span class="pre">runtime</span></code> 包涵盖了很多有用的函数。比如查看 Go 的运行时版本可以使用 <code class="docutils literal notranslate"><span class="pre">Version</span></code> 函数。文档表明该函数返回提交时的哈希值，以及二进制文件构建时的日期和标记。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Version</span></code> 函数实际上返回的是常量  <code class="docutils literal notranslate"><span class="pre">runtime/internal/sys.TheVersion</span></code>。这个常量位于 <code class="docutils literal notranslate"><span class="pre">$GOPATH/src/runtime/internal/sys/zversion.go</span></code> 文件中。</p>
+<p>这个 <code class="docutils literal notranslate"><span class="pre">.go</span></code> 文件由 <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">dist</span></code> 工具生成，并且由 <code class="docutils literal notranslate"><span class="pre">go/src/cmd/dist/build.go</span></code> 中的 <cite>findversion</cite> 这个函数判定 Go 的版本，下面会详细说明。</p>
+<p>在判定 Go 版本的时候，优先级最高的是 <code class="docutils literal notranslate"><span class="pre">$GOROOT/VERSION</span></code> 文件，如果这个文件为空或不存在的话，则查看 <code class="docutils literal notranslate"><span class="pre">$GOROOT/VERSION.cache</span></code> 文件。如果 <code class="docutils literal notranslate"><span class="pre">$GOROOT/VERSION.cache</span></code> 文件也找不到的话，那么工具会尝试从 Git 信息中判断 Go 版本，前提是已经为 Go 代码创建 Git 仓库。</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="id5">
+<h2>1.2. 接收程序参数</h2>
+<p>参数化运行程序的最简单的方式是使用命令行参数作为程序参数。</p>
+<p><a class="reference external" href="#">返回顶部⬆︎</a></p>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>
