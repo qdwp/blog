@@ -7,12 +7,12 @@
     <meta name="dtb:maxPageNumber" content="0"/>
   </head>
   <docTitle>
-    <text>DUNWEI’ Blog</text>
+    <text>INDEX</text>
   </docTitle>
   <navMap>    
     <navPoint id="navPoint1" playOrder="1">
       <navLabel>
-        <text>工作学习</text>
+        <text>DUNWEI’ Blog</text>
       </navLabel>
       <content src="index.xhtml" />  
     </navPoint>
@@ -20,23 +20,23 @@
       <navLabel>
         <text>Golang 专栏</text>
       </navLabel>
-      <content src="golang.xhtml" />  
+      <content src="category/golang.xhtml" />  
       <navPoint id="navPoint3" playOrder="2">
         <navLabel>
           <text>Golang 专栏</text>
         </navLabel>
-        <content src="golang.xhtml" />  
+        <content src="category/golang.xhtml" />  
       </navPoint>
       <navPoint id="navPoint4" playOrder="3">
         <navLabel>
           <text>Golang 入门教程</text>
         </navLabel>
-        <content src="golang.xhtml#id1" />  
+        <content src="category/golang.xhtml#id1" />  
         <navPoint id="navPoint5" playOrder="3">
           <navLabel>
             <text>Golang 入门教程</text>
           </navLabel>
-          <content src="golang.xhtml#id1" />  
+          <content src="category/golang.xhtml#id1" />  
         </navPoint>
         <navPoint id="navPoint6" playOrder="4">
           <navLabel>
@@ -112,7 +112,7 @@
         </navPoint>
         <navPoint id="navPoint18" playOrder="16">
           <navLabel>
-            <text>并发</text>
+            <text>反射</text>
           </navLabel>
           <content src="contents/go-tutorial/13-reflection.xhtml" />  
         </navPoint>
@@ -126,45 +126,87 @@
     </navPoint>
     <navPoint id="navPoint20" playOrder="18">
       <navLabel>
-        <text>读书笔记</text>
+        <text>数据库专栏</text>
       </navLabel>
-      <content src="book.xhtml" />  
+      <content src="category/database.xhtml" />  
       <navPoint id="navPoint21" playOrder="18">
         <navLabel>
-          <text>读书笔记</text>
+          <text>数据库专栏</text>
         </navLabel>
-        <content src="book.xhtml" />  
+        <content src="category/database.xhtml" />  
       </navPoint>
       <navPoint id="navPoint22" playOrder="19">
         <navLabel>
+          <text>MySQL</text>
+        </navLabel>
+        <content src="category/database.xhtml#mysql" />  
+        <navPoint id="navPoint23" playOrder="19">
+          <navLabel>
+            <text>MySQL</text>
+          </navLabel>
+          <content src="category/database.xhtml#mysql" />  
+        </navPoint>
+        <navPoint id="navPoint24" playOrder="20">
+          <navLabel>
+            <text>MySQL 性能优化笔记[1]</text>
+          </navLabel>
+          <content src="contents/database/mysql-optimize-01.xhtml" />  
+        </navPoint>
+        <navPoint id="navPoint25" playOrder="21">
+          <navLabel>
+            <text>MySQL 性能优化笔记[2]</text>
+          </navLabel>
+          <content src="contents/database/mysql-optimize-02.xhtml" />  
+        </navPoint>
+        <navPoint id="navPoint26" playOrder="22">
+          <navLabel>
+            <text>从 MySQL 迁移到 PostgreSQL 需要注意的事</text>
+          </navLabel>
+          <content src="contents/database/mysql2pg.xhtml" />  
+        </navPoint>
+      </navPoint>
+    </navPoint>
+    <navPoint id="navPoint27" playOrder="23">
+      <navLabel>
+        <text>读书笔记</text>
+      </navLabel>
+      <content src="category/book.xhtml" />  
+      <navPoint id="navPoint28" playOrder="23">
+        <navLabel>
+          <text>读书笔记</text>
+        </navLabel>
+        <content src="category/book.xhtml" />  
+      </navPoint>
+      <navPoint id="navPoint29" playOrder="24">
+        <navLabel>
           <text>《Go 标准库使用手册》学习笔记</text>
         </navLabel>
-        <content src="book.xhtml#go" />  
-        <navPoint id="navPoint23" playOrder="19">
+        <content src="category/book.xhtml#go" />  
+        <navPoint id="navPoint30" playOrder="24">
           <navLabel>
             <text>《Go 标准库使用手册》学习笔记</text>
           </navLabel>
-          <content src="book.xhtml#go" />  
+          <content src="category/book.xhtml#go" />  
         </navPoint>
-        <navPoint id="navPoint24" playOrder="20">
+        <navPoint id="navPoint31" playOrder="25">
           <navLabel>
             <text>与环境交互</text>
           </navLabel>
           <content src="contents/go-standard-library-cookbook/chapter1.xhtml" />  
         </navPoint>
       </navPoint>
-      <navPoint id="navPoint25" playOrder="21">
+      <navPoint id="navPoint32" playOrder="26">
         <navLabel>
           <text>《Effective Java 第三版》学习笔记</text>
         </navLabel>
-        <content src="book.xhtml#effective-java" />  
-        <navPoint id="navPoint26" playOrder="21">
+        <content src="category/book.xhtml#effective-java" />  
+        <navPoint id="navPoint33" playOrder="26">
           <navLabel>
             <text>《Effective Java 第三版》学习笔记</text>
           </navLabel>
-          <content src="book.xhtml#effective-java" />  
+          <content src="category/book.xhtml#effective-java" />  
         </navPoint>
-        <navPoint id="navPoint27" playOrder="22">
+        <navPoint id="navPoint34" playOrder="27">
           <navLabel>
             <text>创建与销毁对象</text>
           </navLabel>
