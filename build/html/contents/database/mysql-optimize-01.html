@@ -1,0 +1,699 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>1. MySQL 性能优化笔记[1] &#8212; INDEX 1.0.0 文档</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="next" title="2. MySQL 性能优化笔记[2]" href="mysql-optimize-02.html" />
+    <link rel="prev" title="数据库专栏" href="../../idx/database.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="mysql-1">
+<span id="mysql-optimize-01"></span><h1>1. MySQL 性能优化笔记[1]<a class="headerlink" href="#mysql-1" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id1">
+<h2>1.1. 数据库优化可以从下面几个方面着手<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<ul class="simple">
+<li><p>SQL及索引</p></li>
+<li><p>数据库表结构</p></li>
+<li><p>系统配置</p></li>
+<li><p>硬件</p></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>1.2. 导入示例数据库<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p>下载MySQL官网提供的 sakila 数据库：<a class="reference external" href="https://dev.mysql.com/doc/index-other.html">https://dev.mysql.com/doc/index-other.html</a>，然后在MySQL命令模式下导入数据库：<a class="reference external" href="https://dev.mysql.com/doc/sakila/en/sakila-installation.html">https://dev.mysql.com/doc/sakila/en/sakila-installation.html</a>。</p>
+<p>docker 进入 mysql 数据库</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>she`ll&gt; docker start mysql_instance
+shell&gt; docker exec -it mysql_instance bash
+</pre></div>
+</div>
+<p>拷贝数据库文件到 docker mysql_instance 后执行下面的命令</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>shell&gt; mysql -u root -p
+mysql&gt; SOURCE C:/temp/sakila-db/sakila-schema.sql;
+mysql&gt; SOURCE C:/temp/sakila-db/sakila-data.sql;
+mysql&gt; select @@version;
++-----------+
+| @@version |
++-----------+
+| 5.7.19    |
++-----------+
+1 row in set (0.00 sec)
+mysql&gt; use sakila;
+Database changed
+mysql&gt; show tables;
++----------------------------+
+| Tables_in_sakila           |
++----------------------------+
+| actor                      |
+| actor_info                 |
+| address                    |
+| category                   |
+| city                       |
+| country                    |
+| customer                   |
+| customer_list              |
+| film                       |
+| film_actor                 |
+| film_category              |
+| film_list                  |
+| film_text                  |
+| inventory                  |
+| language                   |
+| nicer_but_slower_film_list |
+| payment                    |
+| rental                     |
+| sales_by_film_category     |
+| sales_by_store             |
+| staff                      |
+| staff_list                 |
+| store                      |
++----------------------------+
+23 rows in set (0.00 sec)`
+</pre></div>
+</div>
+</div>
+<div class="section" id="sql">
+<h2>1.3. SQL语句优化<a class="headerlink" href="#sql" title="永久链接至标题">¶</a></h2>
+<div class="section" id="id3">
+<h3>1.3.1. 如何发现有问题的SQL？<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<p>使用MySQL慢查询日志对有效率问题的SQL进行监控</p>
+<p>查看是否开启慢查询</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">show</span> <span class="n">variables</span> <span class="n">like</span> <span class="s1">&#39;slow_query_log&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>指定慢查询日志文件位置</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="k">global</span> <span class="n">slow_query_log_file</span><span class="o">=</span><span class="s1">&#39;/home/mysql/mysql_slow.log&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>指定是否把没有使用索引的SQL记录到日志中</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="k">global</span> <span class="n">log_queries_not_using_indexes</span><span class="o">=</span><span class="n">on</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>指定查询时间超过 1s 的SQL记录到慢查询日志，mysql 5.7版本可以省略 <code class="docutils literal notranslate"><span class="pre">global</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="k">global</span> <span class="n">long_query_time</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>开启慢查询日志记录</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="k">global</span> <span class="n">slow_query_log</span><span class="o">=</span><span class="n">on</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>1.3.2. 查看慢查询日志是否正常记录<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">show</span> <span class="n">tables</span><span class="p">;</span>
+<span class="o">...</span>         <span class="c1"># 省略查询输出</span>
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="n">select</span> <span class="o">*</span> <span class="kn">from</span> <span class="nn">store</span> <span class="n">limit</span> <span class="mi">10</span><span class="p">;</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>查看慢查询日志</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shell</span><span class="o">&gt;</span> <span class="n">tail</span> <span class="o">-</span><span class="n">n</span> <span class="mi">10</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">mysql_slow</span><span class="o">.</span><span class="n">log</span>
+<span class="c1"># Time: 2017-12-13T09:47:45.452804Z</span>
+<span class="c1"># User@Host: root[root] @ localhost []  Id:     4</span>
+<span class="c1"># Query_time: 0.000499  Lock_time: 0.000103 Rows_sent: 23  Rows_examined: 23</span>
+<span class="n">SET</span> <span class="n">timestamp</span><span class="o">=</span><span class="mi">1513158465</span><span class="p">;</span>
+<span class="n">show</span> <span class="n">tables</span><span class="p">;</span>
+<span class="c1"># Time: 2017-12-13T09:47:57.221642Z</span>
+<span class="c1"># User@Host: root[root] @ localhost []  Id:     4</span>
+<span class="c1"># Query_time: 0.000265  Lock_time: 0.000081 Rows_sent: 2  Rows_examined: 2</span>
+<span class="n">SET</span> <span class="n">timestamp</span><span class="o">=</span><span class="mi">1513158477</span><span class="p">;</span>
+<span class="n">select</span> <span class="o">*</span> <span class="kn">from</span> <span class="nn">store</span> <span class="n">limit</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h3>1.3.3. 慢查询日志所包含的信息<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h3>
+<p>日志记录时间</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Time</span><span class="p">:</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">13</span><span class="n">T09</span><span class="p">:</span><span class="mi">47</span><span class="p">:</span><span class="mf">57.221642</span><span class="n">Z</span>
+</pre></div>
+</div>
+<p>执行SQL的主机信息</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">User</span><span class="nd">@Host</span><span class="p">:</span> <span class="n">root</span><span class="p">[</span><span class="n">root</span><span class="p">]</span> <span class="o">@</span> <span class="n">localhost</span> <span class="p">[]</span>  <span class="n">Id</span><span class="p">:</span>     <span class="mi">4</span>
+</pre></div>
+</div>
+<p>SQL的执行状态信息</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Query_time</span><span class="p">:</span> <span class="mf">0.000265</span>  <span class="n">Lock_time</span><span class="p">:</span> <span class="mf">0.000081</span> <span class="n">Rows_sent</span><span class="p">:</span> <span class="mi">2</span>  <span class="n">Rows_examined</span><span class="p">:</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>SQL执行时间</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SET</span> <span class="n">timestamp</span><span class="o">=</span><span class="mi">1513158477</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>SQL执行语句</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">select</span> <span class="o">*</span> <span class="kn">from</span> <span class="nn">store</span> <span class="n">limit</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="mysqldumpslow">
+<h3>1.3.4. 慢查询日志分析工具：<code class="docutils literal notranslate"><span class="pre">mysqldumpslow</span></code><a class="headerlink" href="#mysqldumpslow" title="永久链接至标题">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">mysqldumpslow</span></code> 是MySQL安装后自带有的慢查询日志查看工具</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shell</span><span class="o">&gt;</span>  <span class="n">mysqldumpslow</span> <span class="o">--</span><span class="n">help</span>
+<span class="n">Usage</span><span class="p">:</span> <span class="n">mysqldumpslow</span> <span class="p">[</span> <span class="n">OPTS</span><span class="o">...</span> <span class="p">]</span> <span class="p">[</span> <span class="n">LOGS</span><span class="o">...</span> <span class="p">]</span>
+<span class="n">Parse</span> <span class="ow">and</span> <span class="n">summarize</span> <span class="n">the</span> <span class="n">MySQL</span> <span class="n">slow</span> <span class="n">query</span> <span class="n">log</span><span class="o">.</span> <span class="n">Options</span> <span class="n">are</span>
+  <span class="o">--</span><span class="n">verbose</span>    <span class="n">verbose</span>
+  <span class="o">--</span><span class="n">debug</span>      <span class="n">debug</span>
+  <span class="o">--</span><span class="n">help</span>       <span class="n">write</span> <span class="n">this</span> <span class="n">text</span> <span class="n">to</span> <span class="n">standard</span> <span class="n">output</span>
+  <span class="o">-</span><span class="n">v</span>           <span class="n">verbose</span>
+  <span class="o">-</span><span class="n">d</span>           <span class="n">debug</span>
+  <span class="o">-</span><span class="n">s</span> <span class="n">ORDER</span>     <span class="n">what</span> <span class="n">to</span> <span class="n">sort</span> <span class="n">by</span> <span class="p">(</span><span class="n">al</span><span class="p">,</span> <span class="n">at</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="s1">&#39;at&#39;</span> <span class="ow">is</span> <span class="n">default</span>
+                <span class="n">al</span><span class="p">:</span> <span class="n">average</span> <span class="n">lock</span> <span class="n">time</span>
+                <span class="n">ar</span><span class="p">:</span> <span class="n">average</span> <span class="n">rows</span> <span class="n">sent</span>
+                <span class="n">at</span><span class="p">:</span> <span class="n">average</span> <span class="n">query</span> <span class="n">time</span>
+                 <span class="n">c</span><span class="p">:</span> <span class="n">count</span>
+                 <span class="n">l</span><span class="p">:</span> <span class="n">lock</span> <span class="n">time</span>
+                 <span class="n">r</span><span class="p">:</span> <span class="n">rows</span> <span class="n">sent</span>
+                 <span class="n">t</span><span class="p">:</span> <span class="n">query</span> <span class="n">time</span>
+  <span class="o">-</span><span class="n">r</span>           <span class="n">reverse</span> <span class="n">the</span> <span class="n">sort</span> <span class="n">order</span> <span class="p">(</span><span class="n">largest</span> <span class="n">last</span> <span class="n">instead</span> <span class="n">of</span> <span class="n">first</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">t</span> <span class="n">NUM</span>       <span class="n">just</span> <span class="n">show</span> <span class="n">the</span> <span class="n">top</span> <span class="n">n</span> <span class="n">queries</span>
+  <span class="o">-</span><span class="n">a</span>           <span class="n">don</span><span class="s1">&#39;t abstract all numbers to N and strings to &#39;</span><span class="n">S</span><span class="s1">&#39;</span>
+  <span class="o">-</span><span class="n">n</span> <span class="n">NUM</span>       <span class="n">abstract</span> <span class="n">numbers</span> <span class="k">with</span> <span class="n">at</span> <span class="n">least</span> <span class="n">n</span> <span class="n">digits</span> <span class="n">within</span> <span class="n">names</span>
+  <span class="o">-</span><span class="n">g</span> <span class="n">PATTERN</span>   <span class="n">grep</span><span class="p">:</span> <span class="n">only</span> <span class="n">consider</span> <span class="n">stmts</span> <span class="n">that</span> <span class="n">include</span> <span class="n">this</span> <span class="n">string</span>
+  <span class="o">-</span><span class="n">h</span> <span class="n">HOSTNAME</span>  <span class="n">hostname</span> <span class="n">of</span> <span class="n">db</span> <span class="n">server</span> <span class="k">for</span> <span class="o">*-</span><span class="n">slow</span><span class="o">.</span><span class="n">log</span> <span class="n">filename</span> <span class="p">(</span><span class="n">can</span> <span class="n">be</span> <span class="n">wildcard</span><span class="p">),</span>
+               <span class="n">default</span> <span class="ow">is</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">match</span> <span class="nb">all</span>
+  <span class="o">-</span><span class="n">i</span> <span class="n">NAME</span>      <span class="n">name</span> <span class="n">of</span> <span class="n">server</span> <span class="n">instance</span> <span class="p">(</span><span class="k">if</span> <span class="n">using</span> <span class="n">mysql</span><span class="o">.</span><span class="n">server</span> <span class="n">startup</span> <span class="n">script</span><span class="p">)</span>
+  <span class="o">-</span><span class="n">l</span>           <span class="n">don</span><span class="s1">&#39;t subtract lock time from total time</span>
+</pre></div>
+</div>
+<p>查看并分析慢查询日志</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shell</span><span class="o">&gt;</span> <span class="n">mysqldumpslow</span> <span class="o">-</span><span class="n">t</span> <span class="mi">3</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">mysql_slow</span><span class="o">.</span><span class="n">log</span>
+
+<span class="n">Reading</span> <span class="n">mysql</span> <span class="n">slow</span> <span class="n">query</span> <span class="n">log</span> <span class="kn">from</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">d60e3989c9d8</span><span class="o">-</span><span class="n">slow</span><span class="o">.</span><span class="n">log</span>
+<span class="n">Count</span><span class="p">:</span> <span class="mi">1</span>  <span class="n">Time</span><span class="o">=</span><span class="mf">0.00</span><span class="n">s</span> <span class="p">(</span><span class="mi">0</span><span class="n">s</span><span class="p">)</span>  <span class="n">Lock</span><span class="o">=</span><span class="mf">0.00</span><span class="n">s</span> <span class="p">(</span><span class="mi">0</span><span class="n">s</span><span class="p">)</span>  <span class="n">Rows</span><span class="o">=</span><span class="mf">23.0</span> <span class="p">(</span><span class="mi">23</span><span class="p">),</span> <span class="n">root</span><span class="p">[</span><span class="n">root</span><span class="p">]</span><span class="nd">@localhost</span>
+  <span class="n">show</span> <span class="n">tables</span>
+<span class="n">Count</span><span class="p">:</span> <span class="mi">1</span>  <span class="n">Time</span><span class="o">=</span><span class="mf">0.00</span><span class="n">s</span> <span class="p">(</span><span class="mi">0</span><span class="n">s</span><span class="p">)</span>  <span class="n">Lock</span><span class="o">=</span><span class="mf">0.00</span><span class="n">s</span> <span class="p">(</span><span class="mi">0</span><span class="n">s</span><span class="p">)</span>  <span class="n">Rows</span><span class="o">=</span><span class="mf">2.0</span> <span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">root</span><span class="p">[</span><span class="n">root</span><span class="p">]</span><span class="nd">@localhost</span>
+  <span class="n">select</span> <span class="o">*</span> <span class="kn">from</span> <span class="nn">store</span> <span class="n">limit</span> <span class="n">N</span>
+<span class="n">Count</span><span class="p">:</span> <span class="mi">1</span>  <span class="n">Time</span><span class="o">=</span><span class="mf">0.00</span><span class="n">s</span> <span class="p">(</span><span class="mi">0</span><span class="n">s</span><span class="p">)</span>  <span class="n">Lock</span><span class="o">=</span><span class="mf">0.00</span><span class="n">s</span> <span class="p">(</span><span class="mi">0</span><span class="n">s</span><span class="p">)</span>  <span class="n">Rows</span><span class="o">=</span><span class="mf">0.0</span> <span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="n">users</span><span class="nd">@0hosts</span>
+  <span class="n">mysqld</span><span class="p">,</span> <span class="n">Version</span><span class="p">:</span> <span class="n">N</span><span class="o">.</span><span class="n">N</span><span class="o">.</span><span class="n">N</span> <span class="p">(</span><span class="n">MySQL</span> <span class="n">Community</span> <span class="n">Server</span> <span class="p">(</span><span class="n">GPL</span><span class="p">))</span><span class="o">.</span> <span class="n">started</span> <span class="k">with</span><span class="p">:</span>
+  <span class="c1"># Time: N-N-13T09:N:N.731872Z</span>
+  <span class="c1"># User@Host: root[root] @ localhost []  Id:     N</span>
+  <span class="c1"># Query_time: N.N  Lock_time: N.N Rows_sent: N  Rows_examined: N</span>
+  <span class="n">use</span> <span class="n">sakila</span><span class="p">;</span>
+  <span class="n">SET</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">N</span><span class="p">;</span>
+  <span class="nb">set</span> <span class="k">global</span> <span class="n">slow_query_log</span><span class="o">=</span><span class="n">on</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p><strong>Count</strong>    SQL执行次数</p></li>
+<li><p><strong>Time</strong>             SQL执行时间</p></li>
+<li><p><strong>Lock</strong>             使用锁时间</p></li>
+<li><p><strong>Rows</strong>             SQL发送的内容</p></li>
+</ol>
+</div>
+<div class="section" id="pt-query-digest">
+<h3>1.3.5. 慢查询日志分析工具：<code class="docutils literal notranslate"><span class="pre">pt-query-digest</span></code><a class="headerlink" href="#pt-query-digest" title="永久链接至标题">¶</a></h3>
+<p>附工具`下载地址 &lt;<a class="reference external" href="https://www.percona.com/doc/percona-toolkit/2.1/installation.html">https://www.percona.com/doc/percona-toolkit/2.1/installation.html</a>&gt;`_。</p>
+<p>安装 pt-* percona工具</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shell</span><span class="o">&gt;</span> <span class="n">wget</span> <span class="n">percona</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">get</span><span class="o">/</span><span class="n">percona</span><span class="o">-</span><span class="n">toolkit</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+<span class="n">shell</span><span class="o">&gt;</span> <span class="n">tar</span> <span class="o">-</span><span class="n">zxvf</span> <span class="n">percona</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">get</span><span class="o">/</span><span class="n">percona</span><span class="o">-</span><span class="n">toolkit</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+<p>percona 包内的工具都在 bin 目录下，将 bin 目录加入 PATH 环境变量即可使用pt-query-digest</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shell</span><span class="o">&gt;</span> <span class="n">pt</span><span class="o">-</span><span class="n">query</span><span class="o">-</span><span class="n">digest</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">mysql_slow</span><span class="o">.</span><span class="n">log</span>
+<span class="c1"># 160ms user time, 0 system time, 25.19M rss, 74.70M vsz</span>
+<span class="c1"># Current date: Wed Dec 13 10:32:09 2017</span>
+<span class="c1"># Hostname: d60e3989c9d8</span>
+<span class="c1"># Files: /var/lib/mysql/d60e3989c9d8-slow.log</span>
+<span class="c1"># Overall: 3 total, 3 unique, 0.00 QPS, 0.00x concurrency ________________</span>
+<span class="c1"># Time range: 2017-12-13T09:47:45 to 2017-12-13T10:32:03</span>
+<span class="c1"># Attribute          total     min     max     avg     95%  stddev  median</span>
+<span class="c1"># ============     ======= ======= ======= ======= ======= ======= =======</span>
+<span class="c1"># Exec time           25ms   242us    23ms     5ms    23ms     9ms   316us</span>
+<span class="c1"># Lock time          463us    81us   106us    92us   103us     9us    89us</span>
+<span class="c1"># Rows sent         15.72k       2  15.67k   3.14k  15.20k   6.07k    9.83</span>
+<span class="c1"># Rows examine      15.72k       2  15.67k   3.14k  15.20k   6.07k    9.83</span>
+<span class="c1"># Query size           414      11     297      69  284.79   97.86   28.07</span>
+<span class="c1"># Profile</span>
+<span class="c1"># Rank Query ID           Response time Calls R/Call V/M   Item</span>
+<span class="c1"># ==== ================== ============= ===== ====== ===== ==============</span>
+<span class="c1">#    1 0x0F48AC368B665207  0.0232 94.6%     1 0.0232  0.00 SELECT payment</span>
+<span class="c1">#    2 0x132628303F99240D  0.0005  2.0%     1 0.0005  0.00 SHOW TABLES</span>
+<span class="c1"># MISC 0xMISC              0.0008  3.4%     3 0.0003   0.0 &lt;3 ITEMS&gt;</span>
+<span class="c1"># Query 1: 0 QPS, 0x concurrency, ID 0x0F48AC368B665207 at byte 1260 _____</span>
+<span class="c1"># This item is included in the report because it matches --limit.</span>
+<span class="c1"># Scores: V/M = 0.00</span>
+<span class="c1"># Time range: all events occurred at 2017-12-13T10:32:03</span>
+<span class="c1"># Attribute    pct   total     min     max     avg     95%  stddev  median</span>
+<span class="c1"># ============ === ======= ======= ======= ======= ======= ======= =======</span>
+<span class="c1"># Count         20       1</span>
+<span class="c1"># Exec time     94    23ms    23ms    23ms    23ms    23ms       0    23ms</span>
+<span class="c1"># Lock time     17    83us    83us    83us    83us    83us       0    83us</span>
+<span class="c1"># Rows sent     99  15.67k  15.67k  15.67k  15.67k  15.67k       0  15.67k</span>
+<span class="c1"># Rows examine  99  15.67k  15.67k  15.67k  15.67k  15.67k       0  15.67k</span>
+<span class="c1"># Query size     5      21      21      21      21      21       0      21</span>
+<span class="c1"># String:</span>
+<span class="c1"># Hosts        localhost</span>
+<span class="c1"># Users        root</span>
+<span class="c1"># Query_time distribution</span>
+<span class="c1">#   1us</span>
+<span class="c1">#  10us</span>
+<span class="c1"># 100us</span>
+<span class="c1">#   1ms</span>
+<span class="c1">#  10ms  ################################################################</span>
+<span class="c1"># 100ms</span>
+<span class="c1">#    1s</span>
+<span class="c1">#  10s+</span>
+<span class="c1"># Tables</span>
+<span class="c1">#    SHOW TABLE STATUS LIKE &#39;payment&#39;\G</span>
+<span class="c1">#    SHOW CREATE TABLE `payment`\G</span>
+<span class="c1"># EXPLAIN /*!50100 PARTITIONS*/</span>
+<span class="n">select</span> <span class="o">*</span> <span class="kn">from</span> <span class="nn">payment</span>\<span class="n">G</span>
+<span class="c1"># Query 1: ...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>1.3.6. 如何通过慢查询日志发现有问题的SQL？<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h3>
+<ol class="arabic simple">
+<li><p>查询次数多且每次查询占用时间长的SQL
+通常为 <code class="docutils literal notranslate"><span class="pre">pt-query-digest</span></code> 分析的前几个查询</p></li>
+<li><p>IO大的SQL
+注意 <code class="docutils literal notranslate"><span class="pre">pt-query-digest</span></code> 分析中的 <code class="docutils literal notranslate"><span class="pre">Rows</span> <span class="pre">examine</span></code> 项，扫面行数据量</p></li>
+<li><p>未命中索引的SQL
+注意 <code class="docutils literal notranslate"><span class="pre">pt-query-digest</span></code> 分析中 <code class="docutils literal notranslate"><span class="pre">Rows</span> <span class="pre">examine</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Rows</span> <span class="pre">Send</span></code> 的对比 [扫描行/命中行]</p></li>
+</ol>
+</div>
+<div class="section" id="sql-explain">
+<h3>1.3.7. 如何分析SQL查询，使用 <code class="docutils literal notranslate"><span class="pre">explain</span></code><a class="headerlink" href="#sql-explain" title="永久链接至标题">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">explain</span> <span class="n">select</span> <span class="n">customer_id</span><span class="p">,</span> <span class="n">first_name</span> <span class="kn">from</span> <span class="nn">customer</span> \<span class="n">G</span>
+<span class="o">***************************</span> <span class="mf">1.</span> <span class="n">row</span> <span class="o">***************************</span>
+           <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">select_type</span><span class="p">:</span> <span class="n">SIMPLE</span>
+        <span class="n">table</span><span class="p">:</span> <span class="n">customer</span>
+   <span class="n">partitions</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="nb">type</span><span class="p">:</span> <span class="n">ALL</span>
+<span class="n">possible_keys</span><span class="p">:</span> <span class="n">NULL</span>
+          <span class="n">key</span><span class="p">:</span> <span class="n">NULL</span>
+      <span class="n">key_len</span><span class="p">:</span> <span class="n">NULL</span>
+          <span class="n">ref</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="n">rows</span><span class="p">:</span> <span class="mi">599</span>
+     <span class="n">filtered</span><span class="p">:</span> <span class="mf">100.00</span>
+        <span class="n">Extra</span><span class="p">:</span> <span class="n">NULL</span>
+<span class="mi">1</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">,</span> <span class="mi">1</span> <span class="n">warning</span> <span class="p">(</span><span class="mf">0.00</span> <span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>explain 返回各列的含义</p>
+<ol class="arabic simple">
+<li><p><strong>table:</strong>          显示这一行的数据是关于哪张表的</p></li>
+<li><p><strong>type:</strong>           显示查询使用的类型。优-&gt;劣: const,eq_reg,ref,range,indec,ALL</p></li>
+<li><p><strong>possible_keys:</strong>  可能应用的索引，NULL，表示没使用索引</p></li>
+<li><p><strong>key:</strong>            实际使用的索引</p></li>
+<li><p><strong>key_len:</strong>        实际使用的索引长度，在不损失精确性的情况下，长度越短越好</p></li>
+<li><p><strong>ref:</strong>            显示索引被使用的列，如果可能的话，是一个常数</p></li>
+<li><p><strong>rows:</strong>           MySQL认为必须检查的用来返回请求数据的行数</p></li>
+<li><p><strong>Extra:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Using filesort:</strong> 需要优化，MySQL 需要进行额外的步骤来发现对返回的行排序。 它根据连接类型及存储排序键值和匹配条件的全部的行指针来排序</p></li>
+<li><p><strong>Using temporary:</strong> 需要优化，MySQL 需要创建一个临时表存储结果，通常发生在对不同的列集进行 <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> 上，而不是 <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> 上。</p></li>
+</ol>
+</li>
+</ol>
+</div>
+<div class="section" id="count-max">
+<h3>1.3.8. Count() 和 Max()函数优化<a class="headerlink" href="#count-max" title="永久链接至标题">¶</a></h3>
+<p>MAX</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">explain</span> <span class="n">select</span> <span class="n">MAX</span><span class="p">(</span><span class="n">payment_date</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">payment</span> \<span class="n">G</span>
+<span class="o">***************************</span> <span class="mf">1.</span> <span class="n">row</span> <span class="o">***************************</span>
+           <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">select_type</span><span class="p">:</span> <span class="n">SIMPLE</span>
+        <span class="n">table</span><span class="p">:</span> <span class="n">payment</span>
+   <span class="n">partitions</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="nb">type</span><span class="p">:</span> <span class="n">ALL</span>
+<span class="n">possible_keys</span><span class="p">:</span> <span class="n">NULL</span>
+          <span class="n">key</span><span class="p">:</span> <span class="n">NULL</span>
+      <span class="n">key_len</span><span class="p">:</span> <span class="n">NULL</span>
+          <span class="n">ref</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="n">rows</span><span class="p">:</span> <span class="mi">16086</span>
+     <span class="n">filtered</span><span class="p">:</span> <span class="mf">100.00</span>
+        <span class="n">Extra</span><span class="p">:</span> <span class="n">NULL</span>
+<span class="mi">1</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">,</span> <span class="mi">1</span> <span class="n">warning</span> <span class="p">(</span><span class="mf">0.00</span> <span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>优化，建立索引</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">create</span> <span class="n">index</span> <span class="n">idx_paydate</span> <span class="n">on</span> <span class="n">payment</span><span class="p">(</span><span class="n">payment_date</span><span class="p">);</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="n">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mf">0.05</span> <span class="n">sec</span><span class="p">)</span>
+<span class="n">Records</span><span class="p">:</span> <span class="mi">0</span>  <span class="n">Duplicates</span><span class="p">:</span> <span class="mi">0</span>  <span class="n">Warnings</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="n">explain</span> <span class="n">select</span> <span class="nb">max</span><span class="p">(</span><span class="n">payment_date</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">payment</span> \<span class="n">G</span>
+<span class="o">***************************</span> <span class="mf">1.</span> <span class="n">row</span> <span class="o">***************************</span>
+           <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">select_type</span><span class="p">:</span> <span class="n">SIMPLE</span>
+        <span class="n">table</span><span class="p">:</span> <span class="n">NULL</span>
+   <span class="n">partitions</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="nb">type</span><span class="p">:</span> <span class="n">NULL</span>
+<span class="n">possible_keys</span><span class="p">:</span> <span class="n">NULL</span>
+          <span class="n">key</span><span class="p">:</span> <span class="n">NULL</span>
+      <span class="n">key_len</span><span class="p">:</span> <span class="n">NULL</span>
+          <span class="n">ref</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="n">rows</span><span class="p">:</span> <span class="n">NULL</span>
+     <span class="n">filtered</span><span class="p">:</span> <span class="n">NULL</span>
+        <span class="n">Extra</span><span class="p">:</span> <span class="n">Select</span> <span class="n">tables</span> <span class="n">optimized</span> <span class="n">away</span>
+<span class="mi">1</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">,</span> <span class="mi">1</span> <span class="n">warning</span> <span class="p">(</span><span class="mf">0.00</span> <span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>不需要扫描表数据，通过索引就可以查询到需要的结果。对于简单的MAX查询操作，可以使用索引查询的方式。在添加了索引之后，那么会增加一个索引表，这个索引表记录了索引值与对应字段的关系。然后，以该字段进行的查询操作，将不再需要扫描原来的数据表的每一行，而是扫描这个建立的索引表。显然，这个索引表的IO的操作就比原来的数据表要小很多了，所以可以提升查询的速度。并且如果表的字段比较多的情况，那么建立索引的总用越明显。同时，因为要维护这个索引表，所以当进行增，删，改的时候，性能会相对下降</p>
+<p><strong>索引的应用:</strong></p>
+<p>覆盖索引，就是说 通过索引的值，在索引表中就可以找到需要的值；</p>
+<p>COUNT</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">select</span> <span class="n">COUNT</span><span class="p">(</span><span class="n">release_year</span><span class="o">=</span><span class="s1">&#39;2006&#39;</span> <span class="n">OR</span> <span class="n">NULL</span><span class="p">)</span> <span class="n">AS</span> <span class="s1">&#39;2006YEARS&#39;</span><span class="p">,</span>
+       <span class="n">COUNT</span><span class="p">(</span><span class="n">release_year</span><span class="o">=</span><span class="s1">&#39;2007&#39;</span> <span class="n">OR</span> <span class="n">NULL</span><span class="p">)</span> <span class="n">AS</span> <span class="s1">&#39;2007YEARS&#39;</span> <span class="kn">from</span> <span class="nn">film</span><span class="p">;</span>
+<span class="o">+-----------+-----------+</span>
+<span class="o">|</span> <span class="mi">2006</span><span class="n">YEARS</span> <span class="o">|</span> <span class="mi">2007</span><span class="n">YEARS</span> <span class="o">|</span>
+<span class="o">+-----------+-----------+</span>
+<span class="o">|</span>      <span class="mi">1000</span> <span class="o">|</span>         <span class="mi">0</span> <span class="o">|</span>
+<span class="o">+-----------+-----------+</span>
+<span class="mi">1</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">set</span> <span class="p">(</span><span class="mf">0.01</span> <span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>NULL 在 COUNT查询时，会被略过查询，忽略扫描不需要的数据行</p>
+</div>
+<div class="section" id="id7">
+<h3>1.3.9. 子查询的优化<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h3>
+<p>子查询一般使用 JOIN 优化成表连接的形式，但是要注意，使用 JOIN 时，如果出现数据重复，需要使用 distinct 来去除重复的数据行</p>
+</div>
+<div class="section" id="group-by">
+<h3>1.3.10. GROUP BY 优化方式<a class="headerlink" href="#group-by" title="永久链接至标题">¶</a></h3>
+<p>示例SQL</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">explain</span> <span class="n">select</span> <span class="n">actor</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span>
+         <span class="n">Count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">sakila.film_actor</span> <span class="n">INNER</span> <span class="n">JOIN</span> <span class="n">sakila</span><span class="o">.</span><span class="n">actor</span> <span class="n">USING</span><span class="p">(</span><span class="n">actor_id</span><span class="p">)</span>
+         <span class="n">GROUP</span> <span class="n">BY</span> <span class="n">film_actor</span><span class="o">.</span><span class="n">actor_id</span> \<span class="n">G</span>
+<span class="o">***************************</span> <span class="mf">1.</span> <span class="n">row</span> <span class="o">***************************</span>
+           <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">select_type</span><span class="p">:</span> <span class="n">SIMPLE</span>
+        <span class="n">table</span><span class="p">:</span> <span class="n">actor</span>
+   <span class="n">partitions</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="nb">type</span><span class="p">:</span> <span class="n">ALL</span>
+<span class="n">possible_keys</span><span class="p">:</span> <span class="n">PRIMARY</span>
+          <span class="n">key</span><span class="p">:</span> <span class="n">NULL</span>
+      <span class="n">key_len</span><span class="p">:</span> <span class="n">NULL</span>
+          <span class="n">ref</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="n">rows</span><span class="p">:</span> <span class="mi">200</span>
+     <span class="n">filtered</span><span class="p">:</span> <span class="mf">100.00</span>
+        <span class="n">Extra</span><span class="p">:</span> <span class="n">Using</span> <span class="n">temporary</span><span class="p">;</span> <span class="n">Using</span> <span class="n">filesort</span>
+<span class="o">***************************</span> <span class="mf">2.</span> <span class="n">row</span> <span class="o">***************************</span>
+           <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">select_type</span><span class="p">:</span> <span class="n">SIMPLE</span>
+        <span class="n">table</span><span class="p">:</span> <span class="n">film_actor</span>
+   <span class="n">partitions</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="nb">type</span><span class="p">:</span> <span class="n">ref</span>
+<span class="n">possible_keys</span><span class="p">:</span> <span class="n">PRIMARY</span><span class="p">,</span><span class="n">idx_fk_film_id</span>
+          <span class="n">key</span><span class="p">:</span> <span class="n">PRIMARY</span>
+      <span class="n">key_len</span><span class="p">:</span> <span class="mi">2</span>
+          <span class="n">ref</span><span class="p">:</span> <span class="n">sakila</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">actor_id</span>
+         <span class="n">rows</span><span class="p">:</span> <span class="mi">27</span>
+     <span class="n">filtered</span><span class="p">:</span> <span class="mf">100.00</span>
+        <span class="n">Extra</span><span class="p">:</span> <span class="n">Using</span> <span class="n">index</span>
+<span class="mi">2</span> <span class="n">rows</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">,</span> <span class="mi">1</span> <span class="n">warning</span> <span class="p">(</span><span class="mf">0.00</span> <span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>在上面的执行计划中显示，表连接使用 <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> 查询时，使用了 <code class="docutils literal notranslate"><span class="pre">Using</span> <span class="pre">temporary;</span> <span class="pre">Using</span> <span class="pre">filesort</span></code> ，这是需要做优化的地方。<code class="docutils literal notranslate"><span class="pre">Using</span> <span class="pre">index</span></code> 表示使用索引查询</p>
+<p>改写SQL</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">explain</span> <span class="n">select</span> <span class="n">actor</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">cnt</span>
+         <span class="kn">from</span> <span class="nn">sakila.actor</span> <span class="n">INNER</span> <span class="n">JOIN</span>
+           <span class="p">(</span> <span class="n">select</span>  <span class="n">actor_id</span><span class="p">,</span><span class="n">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="n">AS</span> <span class="n">cnt</span>
+             <span class="kn">from</span> <span class="nn">sakila.film_actor</span> <span class="n">GROUP</span> <span class="n">BY</span> <span class="n">actor_id</span>
+           <span class="p">)</span> <span class="n">AS</span> <span class="n">c</span> <span class="n">USING</span><span class="p">(</span><span class="n">actor_id</span><span class="p">)</span> \<span class="n">G</span>
+<span class="o">***************************</span> <span class="mf">1.</span> <span class="n">row</span> <span class="o">***************************</span>
+           <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">select_type</span><span class="p">:</span> <span class="n">PRIMARY</span>
+        <span class="n">table</span><span class="p">:</span> <span class="n">actor</span>
+   <span class="n">partitions</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="nb">type</span><span class="p">:</span> <span class="n">ALL</span>
+<span class="n">possible_keys</span><span class="p">:</span> <span class="n">PRIMARY</span>
+          <span class="n">key</span><span class="p">:</span> <span class="n">NULL</span>
+      <span class="n">key_len</span><span class="p">:</span> <span class="n">NULL</span>
+          <span class="n">ref</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="n">rows</span><span class="p">:</span> <span class="mi">200</span>
+     <span class="n">filtered</span><span class="p">:</span> <span class="mf">100.00</span>
+        <span class="n">Extra</span><span class="p">:</span> <span class="n">NULL</span>
+<span class="o">***************************</span> <span class="mf">2.</span> <span class="n">row</span> <span class="o">***************************</span>
+           <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">select_type</span><span class="p">:</span> <span class="n">PRIMARY</span>
+        <span class="n">table</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">derived2</span><span class="o">&gt;</span>
+   <span class="n">partitions</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="nb">type</span><span class="p">:</span> <span class="n">ref</span>
+<span class="n">possible_keys</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">auto_key0</span><span class="o">&gt;</span>
+          <span class="n">key</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">auto_key0</span><span class="o">&gt;</span>
+      <span class="n">key_len</span><span class="p">:</span> <span class="mi">2</span>
+          <span class="n">ref</span><span class="p">:</span> <span class="n">sakila</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">actor_id</span>
+         <span class="n">rows</span><span class="p">:</span> <span class="mi">27</span>
+     <span class="n">filtered</span><span class="p">:</span> <span class="mf">100.00</span>
+        <span class="n">Extra</span><span class="p">:</span> <span class="n">NULL</span>
+<span class="o">***************************</span> <span class="mf">3.</span> <span class="n">row</span> <span class="o">***************************</span>
+           <span class="nb">id</span><span class="p">:</span> <span class="mi">2</span>
+  <span class="n">select_type</span><span class="p">:</span> <span class="n">DERIVED</span>
+        <span class="n">table</span><span class="p">:</span> <span class="n">film_actor</span>
+   <span class="n">partitions</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="nb">type</span><span class="p">:</span> <span class="n">index</span>
+<span class="n">possible_keys</span><span class="p">:</span> <span class="n">PRIMARY</span><span class="p">,</span><span class="n">idx_fk_film_id</span>
+          <span class="n">key</span><span class="p">:</span> <span class="n">PRIMARY</span>
+      <span class="n">key_len</span><span class="p">:</span> <span class="mi">4</span>
+          <span class="n">ref</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="n">rows</span><span class="p">:</span> <span class="mi">5462</span>
+     <span class="n">filtered</span><span class="p">:</span> <span class="mf">100.00</span>
+        <span class="n">Extra</span><span class="p">:</span> <span class="n">Using</span> <span class="n">index</span>
+        <span class="mi">3</span> <span class="n">rows</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">,</span> <span class="mi">1</span> <span class="n">warning</span> <span class="p">(</span><span class="mf">0.00</span> <span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>改写SQL后，将分组 GROUP BY 放在子查询中,查询时不再使用 Using temporary; Using filesort，而是只有扫描表和使用索引的形式。这样可以节省大量的 IO 资源</p>
+</div>
+<div class="section" id="limit">
+<h3>1.3.11. Limit 条件优化<a class="headerlink" href="#limit" title="永久链接至标题">¶</a></h3>
+<p>limit 常用于数据的分页处理，经常伴随 ORDER BY 从句使用，因此会使用文件排序(Using filesort)，这样会造成大量的IO操作，占用系统IO资源</p>
+<p>示例</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">explain</span> <span class="n">select</span> <span class="n">film_id</span><span class="p">,</span> <span class="n">description</span>
+         <span class="kn">from</span> <span class="nn">sakila.film</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">title</span> <span class="n">LIMIT</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">5</span> \<span class="n">G</span>
+<span class="o">***************************</span> <span class="mf">1.</span> <span class="n">row</span> <span class="o">***************************</span>
+           <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">select_type</span><span class="p">:</span> <span class="n">SIMPLE</span>
+        <span class="n">table</span><span class="p">:</span> <span class="n">film</span>
+   <span class="n">partitions</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="nb">type</span><span class="p">:</span> <span class="n">ALL</span>
+<span class="n">possible_keys</span><span class="p">:</span> <span class="n">NULL</span>
+          <span class="n">key</span><span class="p">:</span> <span class="n">NULL</span>
+      <span class="n">key_len</span><span class="p">:</span> <span class="n">NULL</span>
+          <span class="n">ref</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="n">rows</span><span class="p">:</span> <span class="mi">1000</span>
+     <span class="n">filtered</span><span class="p">:</span> <span class="mf">100.00</span>
+        <span class="n">Extra</span><span class="p">:</span> <span class="n">Using</span> <span class="n">filesort</span>
+<span class="mi">1</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">,</span> <span class="mi">1</span> <span class="n">warning</span> <span class="p">(</span><span class="mf">0.00</span> <span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>上面的SQL语句使用的表扫描的方式扫描了1000行数据，还使用到了文件排序(<code class="docutils literal notranslate"><span class="pre">Using</span> <span class="pre">filesort</span></code>)方式。当表中的数据量非常大的时候，会产生IO资源问题</p>
+<p><strong>优化步骤 1</strong></p>
+<p>使用有索引的列或主键进行 <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> 操作</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">explain</span> <span class="n">select</span> <span class="n">film_id</span><span class="p">,</span> <span class="n">description</span>
+       <span class="kn">from</span> <span class="nn">sakila.film</span> <span class="n">ORDER</span> <span class="n">BY</span> <span class="n">film_id</span> <span class="n">LIMIT</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">5</span> \<span class="n">G</span>
+<span class="o">***************************</span> <span class="mf">1.</span> <span class="n">row</span> <span class="o">***************************</span>
+           <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="n">select_type</span><span class="p">:</span> <span class="n">SIMPLE</span>
+        <span class="n">table</span><span class="p">:</span> <span class="n">film</span>
+   <span class="n">partitions</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="nb">type</span><span class="p">:</span> <span class="n">index</span>
+<span class="n">possible_keys</span><span class="p">:</span> <span class="n">NULL</span>
+          <span class="n">key</span><span class="p">:</span> <span class="n">PRIMARY</span>
+      <span class="n">key_len</span><span class="p">:</span> <span class="mi">2</span>
+          <span class="n">ref</span><span class="p">:</span> <span class="n">NULL</span>
+         <span class="n">rows</span><span class="p">:</span> <span class="mi">55</span>
+     <span class="n">filtered</span><span class="p">:</span> <span class="mf">100.00</span>
+        <span class="n">Extra</span><span class="p">:</span> <span class="n">NULL</span>
+<span class="mi">1</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">,</span> <span class="mi">1</span> <span class="n">warning</span> <span class="p">(</span><span class="mf">0.00</span> <span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>排序换成主键后，仅仅扫描了55行，并且没有使用文件排序，而是使用索引查询。但是随着翻页增加，扫描的行数也会增加，数据量很大的时候也会占用大量IO资源</p>
+<p><strong>优化步骤 2</strong></p>
+<p>如果使用排序查询的主键是 <strong>整数且连续递增</strong> 的，在分页查询的时候，使用 WHERE 条件进行过滤，会减少表扫描的行数。但是使用这中方式，是有限制的，需要使用查询的主键必须是 <strong>整数且连续递增</strong> 的.</p>
+</div>
+</div>
+<div class="section" id="id8">
+<h2>1.4. 索引优化<a class="headerlink" href="#id8" title="永久链接至标题">¶</a></h2>
+<div class="section" id="id9">
+<h3>1.4.1. 如何选择合适的列建立索引<a class="headerlink" href="#id9" title="永久链接至标题">¶</a></h3>
+<ol class="arabic simple">
+<li><p>在 <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> 从句， <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code> 从句， <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> 从句， <code class="docutils literal notranslate"><span class="pre">OR</span></code> 从句中出现的列</p></li>
+<li><p>索引字段越小越好</p></li>
+<li><p>离散度大的列放到联合索引的前面
+<code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">payment</span> <span class="pre">WHERE</span> <span class="pre">staff_id</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">AND</span> <span class="pre">customer_id</span> <span class="pre">=</span> <span class="pre">584;</span></code>
+在建立索引时，因为 <code class="docutils literal notranslate"><span class="pre">customer_id</span></code> 的离散度更大，索引应该使用联合索引 <code class="docutils literal notranslate"><span class="pre">index(customer_id,</span> <span class="pre">staff_id)</span></code></p></li>
+</ol>
+</div>
+<div class="section" id="id10">
+<h3>1.4.2. 索引优化SQL的方法<a class="headerlink" href="#id10" title="永久链接至标题">¶</a></h3>
+<ol class="arabic simple">
+<li><p>建立索引可以提高查询的效率，但是，过多的索引会影响数据库写入的效率。  同时，也可能会影响查询时索引的选择，从而减低了索引查询本身的高效性</p></li>
+<li><p>删除重复和冗余的索引: 重复索引是指相同的列以相同的顺序建立的同类型的索引。</p></li>
+</ol>
+<p>如下表中 primary key 和在 id 列上建立的索引就是重复索引</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="n">table</span> <span class="n">test</span><span class="p">(</span>
+    <span class="nb">id</span> <span class="nb">int</span> <span class="ow">not</span> <span class="n">null</span> <span class="n">promary</span> <span class="n">key</span><span class="p">,</span>            <span class="c1"># 指定主键，建立索引</span>
+    <span class="n">name</span> <span class="n">varchar</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="ow">not</span> <span class="n">null</span><span class="p">,</span>
+    <span class="n">unique</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>                                                      <span class="c1"># 指定唯一键，建立索引</span>
+<span class="p">)</span><span class="n">engine</span><span class="o">=</span><span class="n">innodb</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>冗余索引是指多个索引的前缀列相同，或是在联合索引中包含了主键的索引
+下面例子中 key(name, id) 就是一个冗余索引</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="n">table</span> <span class="n">test</span><span class="p">(</span>
+    <span class="nb">id</span> <span class="nb">int</span> <span class="ow">not</span> <span class="n">null</span> <span class="n">promary</span> <span class="n">key</span><span class="p">,</span>            <span class="c1"># 指定主键，建立索引</span>
+    <span class="n">name</span> <span class="n">varchar</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="ow">not</span> <span class="n">null</span><span class="p">,</span>
+    <span class="n">key</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>                                           <span class="c1"># 指定联合索引</span>
+<span class="p">)</span><span class="n">engine</span><span class="o">=</span><span class="n">innodb</span><span class="p">;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>查看数据库中的重复索引</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">use</span> <span class="n">information_schema</span><span class="p">;</span>
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="n">SELECT</span>
+         <span class="n">TS1</span><span class="o">.</span><span class="n">TABLE_SCHEMA</span> <span class="n">AS</span> <span class="s1">&#39;TABLE_NAME&#39;</span><span class="p">,</span>
+         <span class="n">TS1</span><span class="o">.</span><span class="n">TABLE_NAME</span> <span class="n">AS</span> <span class="s1">&#39;TABLE_NAME&#39;</span><span class="p">,</span>
+         <span class="n">TS1</span><span class="o">.</span><span class="n">INDEX_NAME</span> <span class="n">AS</span> <span class="s1">&#39;INDEX_1&#39;</span><span class="p">,</span>
+         <span class="n">TS2</span><span class="o">.</span><span class="n">INDEX_NAME</span> <span class="n">AS</span> <span class="s1">&#39;INDEX_2&#39;</span><span class="p">,</span>
+         <span class="n">TS1</span><span class="o">.</span><span class="n">COLUMN_NAME</span> <span class="n">AS</span> <span class="s1">&#39;DUPLICATE_COLUMN&#39;</span>
+       <span class="n">FROM</span> <span class="n">STATISTICS</span> <span class="n">TS1</span> <span class="n">JOIN</span> <span class="n">STATISTICS</span> <span class="n">TS2</span>
+         <span class="n">ON</span> <span class="n">TS1</span><span class="o">.</span><span class="n">TABLE_SCHEMA</span><span class="o">=</span><span class="n">TS2</span><span class="o">.</span><span class="n">TABLE_SCHEMA</span>
+         <span class="n">AND</span> <span class="n">TS1</span><span class="o">.</span><span class="n">TABLE_NAME</span><span class="o">=</span><span class="n">TS2</span><span class="o">.</span><span class="n">TABLE_NAME</span>
+         <span class="n">AND</span> <span class="n">TS1</span><span class="o">.</span><span class="n">SEQ_IN_INDEX</span><span class="o">=</span><span class="n">TS2</span><span class="o">.</span><span class="n">SEQ_IN_INDEX</span>
+         <span class="n">AND</span> <span class="n">TS1</span><span class="o">.</span><span class="n">COLUMN_NAME</span><span class="o">=</span><span class="n">TS2</span><span class="o">.</span><span class="n">COLUMN_NAME</span>
+       <span class="n">WHERE</span>
+         <span class="n">TS1</span><span class="o">.</span><span class="n">SEQ_IN_INDEX</span><span class="o">=</span><span class="mi">1</span>
+         <span class="n">AND</span> <span class="n">TS1</span><span class="o">.</span><span class="n">INDEX_NAME</span><span class="o">&lt;&gt;</span><span class="n">TS2</span><span class="o">.</span><span class="n">INDEX_NAME</span><span class="p">;</span>
+
+<span class="o">+------------+------------+----------+----------+------------------+</span>
+<span class="o">|</span> <span class="n">TABLE_NAME</span> <span class="o">|</span> <span class="n">TABLE_NAME</span> <span class="o">|</span> <span class="n">INDEX_1</span>  <span class="o">|</span> <span class="n">INDEX_2</span>  <span class="o">|</span> <span class="n">DUPLICATE_COLUMN</span> <span class="o">|</span>
+<span class="o">+------------+------------+----------+----------+------------------+</span>
+<span class="o">|</span> <span class="n">sakila</span>     <span class="o">|</span> <span class="n">country</span>    <span class="o">|</span> <span class="n">idx_cnty</span> <span class="o">|</span> <span class="n">PRIMARY</span>  <span class="o">|</span> <span class="n">country_id</span>       <span class="o">|</span>
+<span class="o">|</span> <span class="n">sakila</span>     <span class="o">|</span> <span class="n">country</span>    <span class="o">|</span> <span class="n">PRIMARY</span>  <span class="o">|</span> <span class="n">idx_cnty</span> <span class="o">|</span> <span class="n">country_id</span>       <span class="o">|</span>
+<span class="o">+------------+------------+----------+----------+------------------+</span>
+<span class="mi">2</span> <span class="n">rows</span> <span class="ow">in</span> <span class="nb">set</span> <span class="p">(</span><span class="mf">0.01</span> <span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="py-duplicate-key-checker">
+<h3>1.4.3. 使用工具查询重复索引；<code class="docutils literal notranslate"><span class="pre">py-duplicate-key-checker</span></code><a class="headerlink" href="#py-duplicate-key-checker" title="永久链接至标题">¶</a></h3>
+<p>使用工具查询重复索引的示例命令</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>shell&gt; pt-duplicate-key-checker -u root -p &#39;password&#39; -h 127.0.0.1:3306
+# ########################################################################
+# sakila.country
+# ########################################################################
+# idx_cnty is a duplicate of PRIMARY
+# Key definitions:
+#   KEY `idx_cnty` (`country_id`)
+#   PRIMARY KEY (`country_id`),
+# Column types:
+#     `country_id` smallint(5) unsigned not null auto_increment
+# To remove this duplicate index, execute:
+ALTER TABLE `sakila`.`country` DROP INDEX `idx_cnty`;
+# ########################################################################
+# Summary of indexes
+# ########################################################################
+# Size Duplicate Indexes   218
+# Total Duplicate Indexes  1
+# Total Indexes            97
+</pre></div>
+</div>
+<p>上面的命令输出，会显示表中的重复索引，并显示索引对应的列，以及给定的移除索引建议</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">INDEX</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../idx/golang.html">Golang 专栏</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../idx/database.html">数据库专栏</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../idx/database.html#mysql">MySQL</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../idx/book.html">读书笔记</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../idx/database.html">数据库专栏</a><ul>
+      <li>Previous: <a href="../../idx/database.html" title="上一章">数据库专栏</a></li>
+      <li>Next: <a href="mysql-optimize-02.html" title="下一章">2. MySQL 性能优化笔记[2]</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020; <a href="http://www.beian.miit.gov.cn">皖ICP备18013831号</a>.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

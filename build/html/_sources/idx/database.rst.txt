@@ -17,6 +17,8 @@ MySQL
     :numbered:
     :glob:
 
+    /contents/database/mysql-optimize-01
+    /contents/database/mysql-optimize-02
     /contents/database/mysql2pg
 
 

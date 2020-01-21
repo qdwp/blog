@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <title>1. 从 MySQL 迁移到 PostgreSQL 需要注意的事 &#8212; INDEX 1.0.0 文档</title>
+    <title>3. 从 MySQL 迁移到 PostgreSQL 需要注意的事 &#8212; INDEX 1.0.0 文档</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -16,7 +16,7 @@
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="搜索" href="../../search.html" />
     <link rel="next" title="读书笔记" href="../../idx/book.html" />
-    <link rel="prev" title="数据库专栏" href="../../idx/database.html" />
+    <link rel="prev" title="2. MySQL 性能优化笔记[2]" href="mysql-optimize-02.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -34,11 +34,11 @@
           <div class="body" role="main">
             
   <div class="section" id="mysql-postgresql">
-<span id="mysql2pg"></span><h1>1. 从 MySQL 迁移到 PostgreSQL 需要注意的事<a class="headerlink" href="#mysql-postgresql" title="永久链接至标题">¶</a></h1>
+<span id="mysql2pg"></span><h1>3. 从 MySQL 迁移到 PostgreSQL 需要注意的事<a class="headerlink" href="#mysql-postgresql" title="永久链接至标题">¶</a></h1>
 <p>MySQL 是使用非常广泛的开源关系型数据库，它非常易于安装与管理，可以适应大多数存储场景。但是在一些特定领域也有一定的局限性。</p>
 <p>这里来描述一下从 MySQL 迁移到 PostgreSQL 数据库需要关注的问题，同样也适用于反向迁移。</p>
 <div class="section" id="mysql-pg">
-<h2>1.1. MySQL 与 PostgreSQL 的不同点<a class="headerlink" href="#mysql-pg" title="永久链接至标题">¶</a></h2>
+<h2>3.1. MySQL 与 PostgreSQL 的不同点<a class="headerlink" href="#mysql-pg" title="永久链接至标题">¶</a></h2>
 <p>通常， PostgreSQL 会尽量遵循现有的数据库标准，但是 MySQL 不然，它在这反面有这一些混合的背景。如果你之前是使用的 MySQL 或 Microsoft Access，对于某些更改可能会觉得不习惯（比如不能使用双引号来引用字符串）。</p>
 <ul class="simple">
 <li><p>MySQL 使用非标准的 <code class="docutils literal notranslate"><span class="pre">#</span></code> 作恶日一行注释的开头， PostgreSQL 则不是。而是使用 <code class="docutils literal notranslate"><span class="pre">--</span></code> （双破折号），这个是符合 ANSI 标准的。并且在两个数据库中都适用。</p></li>
@@ -93,7 +93,7 @@
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../../idx/database.html">数据库专栏</a><ul>
-      <li>Previous: <a href="../../idx/database.html" title="上一章">数据库专栏</a></li>
+      <li>Previous: <a href="mysql-optimize-02.html" title="上一章">2. MySQL 性能优化笔记[2]</a></li>
       <li>Next: <a href="../../idx/book.html" title="下一章">读书笔记</a></li>
   </ul></li>
   </ul></li>
