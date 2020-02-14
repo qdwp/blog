@@ -341,12 +341,14 @@ Go 还提供了其他简洁的变量声明方式。这就是所谓的短式声�
 
 * bool
 * 数值类型
+
   * int8, int16, int32, int64, int
   * uint8, uint16, uint32, uint64, uint
   * float32, float64
   * complex64, complex128
   * byte
   * rune
+
 * string
 
 
