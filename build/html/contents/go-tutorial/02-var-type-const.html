@@ -40,7 +40,7 @@
 <div><ul class="simple">
 <li><p><a class="reference internal" href="#id2">变量</a></p></li>
 <li><p><a class="reference internal" href="#id9">类型</a></p></li>
-<li><p><a class="reference internal" href="#id10">常量</a></p></li>
+<li><p><a class="reference internal" href="#id11">常量</a></p></li>
 </ul>
 </div></blockquote>
 <div class="section" id="id2">
@@ -306,9 +306,84 @@
 </div>
 <div class="section" id="id9">
 <h2>2.2. 类型<a class="headerlink" href="#id9" title="永久链接至标题">¶</a></h2>
+<p>下面是 go 中的基本变量类型:</p>
+<ul class="simple">
+<li><p>bool</p></li>
+<li><p>数值类型
+* int8, int16, int32, int64, int
+* uint8, uint16, uint32, uint64, uint
+* float32, float64
+* complex64, complex128
+* byte
+* rune</p></li>
+<li><p>string</p></li>
+</ul>
+<div class="section" id="bool">
+<h3>2.2.1. bool<a class="headerlink" href="#bool" title="永久链接至标题">¶</a></h3>
+<p>一个 bool 类型的变量代表了一个非 <em>true</em> 即 <em>false</em> 的 bool 值。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">main</span>
+
+<span class="kn">import</span> <span class="s2">&quot;fmt&quot;</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">a</span> <span class="p">:</span><span class="o">=</span> <span class="n">true</span>
+    <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="n">false</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;a:&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="s2">&quot;b:&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span> <span class="o">&amp;&amp;</span> <span class="n">b</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;c:&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+    <span class="n">d</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span> <span class="o">||</span> <span class="n">b</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;d:&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://play.golang.org/p/v_W3HQ0MdY">Run in playground v_W3HQ0MdY</a></p>
+<p>在上面的程序中，变量 a 被标记为 <em>true</em>，变量 b 被标记为 <em>false</em>。</p>
+<p>变量 c 被标记为 <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">&amp;&amp;</span> <span class="pre">b</span></code> 的值，操作符 <code class="docutils literal notranslate"><span class="pre">&amp;&amp;</span></code> 在当且仅当 a 和 b 都为 <em>true</em> 的时候返回 <em>true</em>。所以这里变量 c 的值为 <em>false</em>。</p>
+<p>操作符 <code class="docutils literal notranslate"><span class="pre">||</span></code> 会在 a 或 b 有一个为 <em>true</em> 的时候返回 <em>true</em>。因为这里 a 是 <em>true，所以 *变量 d 被标记为 *true</em>。上面的程序会有输出。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">:</span> <span class="n">true</span> <span class="n">b</span><span class="p">:</span> <span class="n">false</span>
+<span class="n">c</span><span class="p">:</span> <span class="n">false</span>
+<span class="n">d</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="id10">
-<h2>2.3. 常量<a class="headerlink" href="#id10" title="永久链接至标题">¶</a></h2>
+<h3>2.2.2. 有符号整数<a class="headerlink" href="#id10" title="永久链接至标题">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">int8</span></code>: 表示 8 位有符号整数
+* 大小: 8 位
+* 范围: -128 ~ 127</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int16</span></code>: 表示 16 位有符号整数
+* 大小: 16 位
+* 范围: -32768 ~ 32767</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int32</span></code>: 表示 32 位有符号整数
+* 大小: 32 位
+* 范围: -2147483648 ~ 2147483647</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int64</span></code>: 表示 64 位有符号整数
+* 大小: 64 位
+* 范围: -9223372036854775808 ~ 9223372036854775807</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code>: 由底层系统平台决定表示 32 位整数还是 64 位整数
+* 大小: 在 32 位系统上为 32 位， 在 64 位系统上为 64 位
+* 范围: 在 32 位系统上 -2147483648 ～ 2147483647，在 64 位系统上 -9223372036854775808 to 9223372036854775807</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">main</span>
+
+<span class="kn">import</span> <span class="s2">&quot;fmt&quot;</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">var</span> <span class="n">a</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">89</span>
+    <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="mi">95</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;value of a is&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="s2">&quot;and b is&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://play.golang.org/p/NyDPsjkma3">Run in playground NyDPsjkma3</a></p>
+<p>上面的程序将会输出 <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">is</span> <span class="pre">89</span> <span class="pre">and</span> <span class="pre">b</span> <span class="pre">is</span> <span class="pre">95</span></code>。</p>
+<p>在上面的程序中，<em>变量 a 是 int 类型</em>，<em>变量 b 的类型由它被标记的值 95 来推断得到</em>。就像我们上面描述的，<em>int</em> 类型的大小在 32 位操作系统中是 32 位，在 64 位操作系统中是 64 位。下面继续并论证这个说法。</p>
+<p>变量的类型可以使用 Printf 函数中的 <strong>%T</strong> 格式分类符打印出来。</p>
+</div>
+</div>
+<div class="section" id="id11">
+<h2>2.3. 常量<a class="headerlink" href="#id11" title="永久链接至标题">¶</a></h2>
 <p><a class="reference external" href="#">返回顶部⬆︎</a></p>
 </div>
 </div>
