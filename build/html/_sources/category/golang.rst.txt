@@ -11,7 +11,7 @@ Golang 入门教程
 ====================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :numbered:
    :glob:
 
