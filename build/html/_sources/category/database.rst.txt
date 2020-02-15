@@ -14,6 +14,7 @@ MySQL
 
 .. toctree::
     :maxdepth: 1
+    :numbered:
     :glob:
 
     /contents/database/mysql-optimize-01

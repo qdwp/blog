@@ -31,5 +31,16 @@ Golang 入门教程
    /contents/go-tutorial/14-file
 
 
+工具 & 答疑
+=======================
+
+.. toctree::
+   :maxdepth: 2
+   :numbered:
+   :glob:
+
+   /contents/go-tool/get-x
+
+
 
 \ `返回顶部⬆︎ <#>`_\

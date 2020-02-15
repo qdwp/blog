@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <title>MySQL 性能优化笔记[2] &#8212; INDEX 1.0.0 文档</title>
+    <title>2. MySQL 性能优化笔记[2] &#8212; INDEX 1.0.0 文档</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -15,8 +15,8 @@
     <script type="text/javascript" src="../../_static/translations.js"></script>
     <link rel="index" title="索引" href="../../genindex.html" />
     <link rel="search" title="搜索" href="../../search.html" />
-    <link rel="next" title="从 MySQL 迁移到 PostgreSQL 需要注意的事" href="mysql2pg.html" />
-    <link rel="prev" title="MySQL 性能优化笔记[1]" href="mysql-optimize-01.html" />
+    <link rel="next" title="3. 从 MySQL 迁移到 PostgreSQL 需要注意的事" href="mysql2pg.html" />
+    <link rel="prev" title="1. MySQL 性能优化笔记[1]" href="mysql-optimize-01.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -34,9 +34,9 @@
           <div class="body" role="main">
             
   <div class="section" id="mysql-2">
-<span id="mysql-optimize-02"></span><h1>MySQL 性能优化笔记[2]<a class="headerlink" href="#mysql-2" title="永久链接至标题">¶</a></h1>
+<span id="mysql-optimize-02"></span><h1>2. MySQL 性能优化笔记[2]<a class="headerlink" href="#mysql-2" title="永久链接至标题">¶</a></h1>
 <div class="section" id="id1">
-<h2>数据库优化可以从下面几个方面着手<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<h2>2.1. 数据库优化可以从下面几个方面着手<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
 <ul class="simple">
 <li><p>SQL及索引</p></li>
 <li><p>数据库表结构</p></li>
@@ -45,9 +45,9 @@
 </ul>
 </div>
 <div class="section" id="id2">
-<h2>数据库表结构优化<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<h2>2.2. 数据库表结构优化<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
 <div class="section" id="id3">
-<h3>选择合适的数据类型<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<h3>2.2.1. 选择合适的数据类型<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
 <p>数据类型的选择，重点在于 合适 ，如何确认选择的数据类型是否合适？</p>
 <ol class="arabic simple">
 <li><p>使用可以存下要求数据的最小的数据类型</p></li>
@@ -81,7 +81,7 @@
 </div>
 </div>
 <div class="section" id="id4">
-<h3>表的范式化和反范式化<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
+<h3>2.2.2. 表的范式化和反范式化<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
 <p>范式化是指数据库设计的规范，目前说道的范式化一般是指第三设计范式。也就是要求数据表中不存在非关系字段对任意候选关键字段的传递函数依赖，则符合第三范式。</p>
 <p>不符合第三范式的数据库表结构:</p>
 <ol class="arabic simple">
@@ -94,7 +94,7 @@
 <p>但是，严格的第三范式会导致过多的表分离。在实际的数据查询中，可以适当的增加一些冗余字段，减少数据查询时的连表操作，优化查询效率。这是在适当的应用反范式化的方式，用表空间换取查询时间。</p>
 </div>
 <div class="section" id="id5">
-<h3>数据表的垂直拆分和水平拆分<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h3>
+<h3>2.2.3. 数据表的垂直拆分和水平拆分<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h3>
 <p><strong>垂直拆分</strong></p>
 <p>所谓的垂直拆分，就是把原来一个有很多列的表拆分成多个表，这解决了表的宽度问题。通常垂直拆分可以按照一下的原则进行：</p>
 <ol class="arabic simple">
@@ -113,7 +113,7 @@
 </div>
 </div>
 <div class="section" id="id6">
-<h2>系统配置优化&amp;服务器硬件优化<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h2>
+<h2>2.3. 系统配置优化&amp;服务器硬件优化<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h2>
 <p><strong>系统配置</strong></p>
 <ol class="arabic simple">
 <li><p>优化系统配置方面，可以从增加网络连接数，减少断开连接时的资源回收</p></li>
@@ -163,8 +163,8 @@
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../../category/database.html">数据库专栏</a><ul>
-      <li>Previous: <a href="mysql-optimize-01.html" title="上一章">MySQL 性能优化笔记[1]</a></li>
-      <li>Next: <a href="mysql2pg.html" title="下一章">从 MySQL 迁移到 PostgreSQL 需要注意的事</a></li>
+      <li>Previous: <a href="mysql-optimize-01.html" title="上一章">1. MySQL 性能优化笔记[1]</a></li>
+      <li>Next: <a href="mysql2pg.html" title="下一章">3. 从 MySQL 迁移到 PostgreSQL 需要注意的事</a></li>
   </ul></li>
   </ul></li>
 </ul>
