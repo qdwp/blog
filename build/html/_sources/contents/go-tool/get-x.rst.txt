@@ -23,7 +23,7 @@ golang.org/x 库安装方法
     git clone https://github.com/golang/net.git
     git clone https://github.com/golang/sys.git
     git clone https://github.com/golang/text.git
-    git clone https://github.com/golang/tool.git
+    git clone https://github.com/golang/tools.git
 
 如上述需要安装使用 ``present`` 工具，还需要执行安装命令:
 
