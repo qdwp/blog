@@ -45,7 +45,8 @@ Golang 支持 Max, Windows, Linux 三个平台。你可以在官网下载
 Mac
 -----
 
-从 `https://golang.org/dl/ <https://golang.org/dl/>`_ 下载 OS X 安装文件。双击开始安装。跟着提示走，Golang 会安装在 */usr/local/go* 并且会将路径 */usr/local/go/bin* 加到 *PATH* 环境变量中。
+从 `https://golang.org/dl/ <https://golang.org/dl/>`_ 下载 OS X 安装文件。双击开始安装。跟着提示走，Golang 会安装在 \
+*/usr/local/go* 并且会将路径 */usr/local/go/bin* 加到 *PATH* 环境变量中。
 
 Windows
 -----------
@@ -67,7 +68,9 @@ hello world
 
 学习一门编程语言，没有什么比自己动手写代码更好的了。让我们开始编写我们的第一个 go 项目吧。
 
-我个人比较推荐使用 `Visual Studio Code <https://code.visualstudio.com/>`_ ，装上 `Go 扩展插件 <https://marketplace.visualstudio.com/items?itemName=lukehoban.Go>`_ 就像是真正的 IDE 一样。它拥有自动补全，代码风格检查以及其他的很多功能。
+我个人比较推荐使用 `Visual Studio Code <https://code.visualstudio.com/>`_ ，装上 \
+`Go 扩展插件 <https://marketplace.visualstudio.com/items?itemName=lukehoban.Go>`_ 就像是真正的 IDE 一样。\
+它拥有自动补全，代码风格检查以及其他的很多功能。
 
 设置 Go 工作空间
 --------------------
@@ -118,17 +121,20 @@ hello world
 
 1. 使用 **go run** 命令 - 在命令提示符模式下输入 ``go run workspacepath/src/hello/helloworld.go``。
 
-  上面命令中 **workspacepath** 应该替换成你自己的工作空间（在 Windows 中是 **C:/Users/YourName/go**，Linux 或 Mac 中是 **$HOME/go**）。
+  上面命令中 **workspacepath** 应该替换成你自己的工作空间（在 Windows 中是 **C:/Users/YourName/go**，Linux 或 Mac 中是 \
+  **$HOME/go**）。
 
   你可以在控制台看到输出 ``hello world``。
 
 2. 使用 **go install** 命令 - 在目录 ``workspacepath/bin/hello`` 运行 ``go install hello`` 来执行这个程序。
 
-  上面命令中 **workspacepath** 应该替换成你自己的工作空间（在 Windows 中是 **C:/Users/YourName/go**，Linux 或 Mac 中是 **$HOME/go**）。
+  上面命令中 **workspacepath** 应该替换成你自己的工作空间（在 Windows 中是 **C:/Users/YourName/go**，Linux 或 Mac 中是 \
+  **$HOME/go**）。
 
   你可以在控制台看到与上面同样的输出 ``hello world``。
 
-  当你输入 **go install hello**，go tool 工具会在工作空间内寻找 hello 包。然后会在工作空间的 bin 目录下创建一个二进制文件 ``hello`` （在 Windows 下为 ``hello.exe``）。文件结构如下 ::
+  当你输入 **go install hello**，go tool 工具会在工作空间内寻找 hello 包。然后会在工作空间的 bin 目录下创建一个二进制文件 \
+  ``hello`` （在 Windows 下为 ``hello.exe``）。文件结构如下 ::
 
         go
             bin
@@ -137,7 +143,8 @@ hello world
                 hello
                     helloworld.go
 
-3. 第三种比较炫的方式是在 **go playground** 中运行程序。尽管它有着一定的局限性，但是运行一些简单的程序还是非常方便的。`点击这里 <https://play.golang.org/p/VtXafkQHYe>`_ 可以跳转到我已经创建好的程序。
+3. 第三种比较炫的方式是在 **go playground** 中运行程序。尽管它有着一定的局限性，但是运行一些简单的程序还是非常方便的。\
+`点击这里 <https://play.golang.org/p/VtXafkQHYe>`_ 可以跳转到我已经创建好的程序。
 
   你也可以使用 `go playground <https://play.golang.org/>`_ 来分享你自己的代码。
 
@@ -158,11 +165,13 @@ hello world
 
 在这里我们将简单的了解一下程序的每一行都做了什么，然后将在接下来的教程总深入讲解每个部分。
 
-**package main** - **每一个 go 文件都必须以 ``package name`` 语句开始**。包被用于提供代码划分和代码重用，这里使用的包名是 ``main`` 。
+**package main** - **每一个 go 文件都必须以 ``package name`` 语句开始**。包被用于提供代码划分和代码重用，这里使用的包名是 \
+``main`` 。
 
 **import "fmt"** - 引入 fmt 包，它可将在 main 函数中向标准输出打印文本。
 
-**func main()** - main 函数是一个特别的函数。程序的执行都是从 main 函数开始的。main 函数应该一直处于 main 包内。符号 **{** 和 **}** 表示 main 函数的开始与结束。
+**func main()** - main 函数是一个特别的函数。程序的执行都是从 main 函数开始的。main 函数应该一直处于 main 包内。符号 \
+**{** 和 **}** 表示 main 函数的开始与结束。
 
 **fmt.Println("Hello world")** - 包 **fmt** 中的 **Println** 函数是用来向标准输出写入文本的。
 

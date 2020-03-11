@@ -40,7 +40,7 @@
 <div><ul class="simple">
 <li><p><a class="reference internal" href="#id2">变量</a></p></li>
 <li><p><a class="reference internal" href="#id9">类型</a></p></li>
-<li><p><a class="reference internal" href="#id11">常量</a></p></li>
+<li><p><a class="reference internal" href="#id17">常量</a></p></li>
 </ul>
 </div></blockquote>
 <div class="section" id="id2">
@@ -352,21 +352,36 @@
 <div class="section" id="id10">
 <h3>2.2.2. 有符号整数<a class="headerlink" href="#id10" title="永久链接至标题">¶</a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">int8</span></code>: 表示 8 位有符号整数
-* 大小: 8 位
-* 范围: -128 ~ 127</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">int16</span></code>: 表示 16 位有符号整数
-* 大小: 16 位
-* 范围: -32768 ~ 32767</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">int32</span></code>: 表示 32 位有符号整数
-* 大小: 32 位
-* 范围: -2147483648 ~ 2147483647</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">int64</span></code>: 表示 64 位有符号整数
-* 大小: 64 位
-* 范围: -9223372036854775808 ~ 9223372036854775807</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code>: 由底层系统平台决定表示 32 位整数还是 64 位整数
-* 大小: 在 32 位系统上为 32 位， 在 64 位系统上为 64 位
-* 范围: 在 32 位系统上 -2147483648 ～ 2147483647，在 64 位系统上 -9223372036854775808 to 9223372036854775807</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int8</span></code>: 表示 8 位有符号整数</p>
+<ul>
+<li><p>大小: 8 位</p></li>
+<li><p>范围: -128 ~ 127</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int16</span></code>: 表示 16 位有符号整数</p>
+<ul>
+<li><p>大小: 16 位</p></li>
+<li><p>范围: -32768 ~ 32767</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int32</span></code>: 表示 32 位有符号整数</p>
+<ul>
+<li><p>大小: 32 位</p></li>
+<li><p>范围: -2147483648 ~ 2147483647</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int64</span></code>: 表示 64 位有符号整数</p>
+<ul>
+<li><p>大小: 64 位</p></li>
+<li><p>范围: -9223372036854775808 ~ 9223372036854775807</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code>: 由底层系统平台决定表示 32 位整数还是 64 位整数</p>
+<ul>
+<li><p>大小: 在 32 位系统上为 32 位， 在 64 位系统上为 64 位</p></li>
+<li><p>范围: 在 32 位系统上 -2147483648 ～ 2147483647，在 64 位系统上 -9223372036854775808 ~ 9223372036854775807</p></li>
+</ul>
+</li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">main</span>
 
@@ -382,11 +397,236 @@
 <p><a class="reference external" href="https://play.golang.org/p/NyDPsjkma3">Run in playground NyDPsjkma3</a></p>
 <p>上面的程序将会输出 <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">is</span> <span class="pre">89</span> <span class="pre">and</span> <span class="pre">b</span> <span class="pre">is</span> <span class="pre">95</span></code>。</p>
 <p>在上面的程序中，<em>变量 a 是 int 类型</em>，<em>变量 b 的类型由它被标记的值 95 来推断得到</em>。就像我们上面描述的，<em>int</em> 类型的大小在 32 位操作系统中是 32 位，在 64 位操作系统中是 64 位。下面继续并论证这个说法。</p>
-<p>变量的类型可以使用 Printf 函数中的 <strong>%T</strong> 格式分类符打印出来。</p>
+<p>变量的类型可以使用 Printf 函数中的 <strong>%T</strong> 占位符打印出来。在 Go 标准库内有一个 <a class="reference external" href="https://golang.org/pkg/unsafe/">unsafe</a> 包，包内有一个 <a class="reference external" href="https://golang.org/pkg/unsafe/#Sizeof">Sizeof</a> 方法，它可以返回传入变量所占的字节数。<code class="docutils literal notranslate"><span class="pre">unsafe</span></code> 包如其名，它是不安全的，可能会导致一些未知的错误，慎用。</p>
+<p>下面的程序中同时打印了变量 <code class="docutils literal notranslate"><span class="pre">a</span></code> 和 <code class="docutils literal notranslate"><span class="pre">b</span></code> 的类型及字节大小。占位符 <code class="docutils literal notranslate"><span class="pre">%T</span></code> 用于打印变量的类型，<code class="docutils literal notranslate"><span class="pre">%d</span></code> 用于打印变量的字节大小。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s2">&quot;fmt&quot;</span>
+    <span class="s2">&quot;unsafe&quot;</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">var</span> <span class="n">a</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">89</span>
+    <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="mi">95</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;value of a is&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="s2">&quot;and b is&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s2">&quot;type of a is %T, size of a is </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">unsafe</span><span class="o">.</span><span class="n">Sizeof</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">//</span><span class="nb">type</span> <span class="ow">and</span> <span class="n">size</span> <span class="n">of</span> <span class="n">a</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">type of b is %T, size of b is </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">unsafe</span><span class="o">.</span><span class="n">Sizeof</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="o">//</span><span class="nb">type</span> <span class="ow">and</span> <span class="n">size</span> <span class="n">of</span> <span class="n">b</span>
+<span class="p">}</span>
+</pre></div>
 </div>
+<p>运行上面的程序会输出</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">of</span> <span class="n">a</span> <span class="ow">is</span> <span class="mi">89</span> <span class="ow">and</span> <span class="n">b</span> <span class="ow">is</span> <span class="mi">95</span>
+<span class="nb">type</span> <span class="n">of</span> <span class="n">a</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">,</span> <span class="n">size</span> <span class="n">of</span> <span class="n">a</span> <span class="ow">is</span> <span class="mi">4</span>
+<span class="nb">type</span> <span class="n">of</span> <span class="n">b</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">,</span> <span class="n">size</span> <span class="n">of</span> <span class="n">b</span> <span class="ow">is</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<p>可以注意到上面的变量 <code class="docutils literal notranslate"><span class="pre">a</span></code> 和 <code class="docutils literal notranslate"><span class="pre">b</span></code> 都是 <code class="docutils literal notranslate"><span class="pre">int</span></code> 类型，并且大小为 32 位（4 字节），这是因为上面的程序是运行在 32 为操作系统上的，如果是运行在 64 位操作系统上，会出输出变量大小为 64 为（8 字节）。</p>
 </div>
 <div class="section" id="id11">
-<h2>2.3. 常量<a class="headerlink" href="#id11" title="永久链接至标题">¶</a></h2>
+<h3>2.2.3. 无符号整数<a class="headerlink" href="#id11" title="永久链接至标题">¶</a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">uint8</span></code>: 8 位无符号整型</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>大小: 8 位</p></li>
+<li><p>范围: 0 ~ 255</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uint16</span></code>: 16 位无符号整型</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>大小: 16 位</p></li>
+<li><p>范围: 0 ~ 65535</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uint32</span></code>: 32 位无符号整型</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>大小: 32 位</p></li>
+<li><p>范围: 0 ~ 4294967295</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uint64</span></code>: 64 位无符号整型</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>大小: 64 位</p></li>
+<li><p>范围: 0 ~ 18446744073709551615</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uint</span></code>: 由底层系统平台决定表示 32 位整数还是 64 位整数</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>大小: 在 32 位系统上为 32 位， 在 64 位系统上为 64 位</p></li>
+<li><p>范围: 在 32 位系统上 0 ～ 4294967295 64 位系统上 0 ~ 18446744073709551615</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="id12">
+<h3>2.2.4. 浮点型<a class="headerlink" href="#id12" title="永久链接至标题">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">float32</span></code>: 32 为浮点型数</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">float64</span></code>: 64 为浮点型数</p></li>
+</ul>
+<p>下面有一个简单的程序来说明一下整型与浮点型数</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s2">&quot;fmt&quot;</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="mf">5.67</span><span class="p">,</span> <span class="mf">8.97</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s2">&quot;type of a %T b %T</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="nb">sum</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="n">diff</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">,</span> <span class="s2">&quot;diff&quot;</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span>
+
+    <span class="n">no1</span><span class="p">,</span> <span class="n">no2</span> <span class="p">:</span><span class="o">=</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">89</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="n">no1</span><span class="o">+</span><span class="n">no2</span><span class="p">,</span> <span class="s2">&quot;diff&quot;</span><span class="p">,</span> <span class="n">no1</span><span class="o">-</span><span class="n">no2</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>变量 <code class="docutils literal notranslate"><span class="pre">a</span></code> 和 <code class="docutils literal notranslate"><span class="pre">b</span></code> 的类型由值可以推断出。这里两个变量的类型是 <code class="docutils literal notranslate"><span class="pre">float64</span></code> （浮点数默认的类型就是 <code class="docutils literal notranslate"><span class="pre">float64</span></code> ）。程序中将两个变量的和赋给 <code class="docutils literal notranslate"><span class="pre">sum</span></code>，两个变量的差赋给 <code class="docutils literal notranslate"><span class="pre">diff</span></code>，并打印。同样，对变量 <code class="docutils literal notranslate"><span class="pre">no1</span></code> 和 <code class="docutils literal notranslate"><span class="pre">no2</span></code> 也执行上述操作。程序打印结果如下</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">of</span> <span class="n">a</span> <span class="n">float64</span> <span class="n">b</span> <span class="n">float64</span>
+<span class="nb">sum</span> <span class="mf">14.64</span> <span class="n">diff</span> <span class="o">-</span><span class="mf">3.3000000000000007</span>
+<span class="nb">sum</span> <span class="mi">145</span> <span class="n">diff</span> <span class="o">-</span><span class="mi">33</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id13">
+<h3>2.2.5. 复数类型<a class="headerlink" href="#id13" title="永久链接至标题">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">complex64</span></code>: 包含 <code class="docutils literal notranslate"><span class="pre">float32</span></code> 类型的实数与虚数部分的复合数据</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">complex128</span></code>: 包含 <code class="docutils literal notranslate"><span class="pre">float64</span></code> 类型的实数与虚数部分的复合数据</p></li>
+</ul>
+<p>内置方法 <a class="reference external" href="https://golang.org/pkg/builtin/#complex">complex</a> 可以将实数与虚数部分整合构造为一个复数。 <code class="docutils literal notranslate"><span class="pre">complex</span></code> 方法定义如下</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="nb">complex</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">i</span> <span class="n">FloatType</span><span class="p">)</span> <span class="n">ComplexType</span>
+</pre></div>
+</div>
+<p>该方法将一个实数部分与一个虚数部分作为参数，然后然后一个复数类型数据。要求实数与虚数部分的类型必须相同。要么都是 <code class="docutils literal notranslate"><span class="pre">float32</span></code> ，要么都是 <code class="docutils literal notranslate"><span class="pre">float64</span></code> 。如果实数与虚数都是 <code class="docutils literal notranslate"><span class="pre">float32</span></code> 类型，方法返回 <code class="docutils literal notranslate"><span class="pre">complex64</span></code> 类型的复数。如果实数与虚数都是 <code class="docutils literal notranslate"><span class="pre">float64</span></code> 类型，方法返回 <code class="docutils literal notranslate"><span class="pre">complex128</span></code> 类型的复数。</p>
+<p>复数还可以使用短变量声明语法创建</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">7</span><span class="n">i</span>
+</pre></div>
+</div>
+<p>现在写一个简单的程序看一下如何处理复数</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s2">&quot;fmt&quot;</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">c1</span> <span class="p">:</span><span class="o">=</span> <span class="nb">complex</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="n">c2</span> <span class="p">:</span><span class="o">=</span> <span class="mi">8</span> <span class="o">+</span> <span class="mi">27</span><span class="n">i</span>
+    <span class="n">cadd</span> <span class="p">:</span><span class="o">=</span> <span class="n">c1</span> <span class="o">+</span> <span class="n">c2</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;sum:&quot;</span><span class="p">,</span> <span class="n">cadd</span><span class="p">)</span>
+    <span class="n">cmul</span> <span class="p">:</span><span class="o">=</span> <span class="n">c1</span> <span class="o">*</span> <span class="n">c2</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;product:&quot;</span><span class="p">,</span> <span class="n">cmul</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">c1</span></code> 和 <code class="docutils literal notranslate"><span class="pre">c2</span></code> 都是复数。<code class="docutils literal notranslate"><span class="pre">c1</span></code> 的实数部分是 5， 虚数部分是 7。<code class="docutils literal notranslate"><span class="pre">c2</span></code> 的实数部分是 6，虚数部分是 27。计算两个复数的和与积，然后打印输出</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">sum</span><span class="p">:</span> <span class="p">(</span><span class="mi">13</span><span class="o">+</span><span class="mi">34</span><span class="n">i</span><span class="p">)</span>
+<span class="n">product</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">149</span><span class="o">+</span><span class="mi">191</span><span class="n">i</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id14">
+<h3>2.2.6. 其它数字类型<a class="headerlink" href="#id14" title="永久链接至标题">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">byte</span></code>: <code class="docutils literal notranslate"><span class="pre">uint8</span></code> 的别称</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rune</span></code>: <code class="docutils literal notranslate"><span class="pre">int32</span></code> 的别称</p></li>
+</ul>
+<p>我们会在之后的字符串章节再详细讨论 <code class="docutils literal notranslate"><span class="pre">bytes</span></code> 与 <code class="docutils literal notranslate"><span class="pre">rune</span></code>。</p>
+</div>
+<div class="section" id="id15">
+<h3>2.2.7. 字符串类型<a class="headerlink" href="#id15" title="永久链接至标题">¶</a></h3>
+<p>字符串是 golang 中一个 <code class="docutils literal notranslate"><span class="pre">bytes</span></code> 集合。如果这个概念不好理解，也没关系，后面会单拉一个章节来讲字符串。</p>
+<p>一个简单的用到字符串的程序</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s2">&quot;fmt&quot;</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">first</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;Naveen&quot;</span>
+    <span class="n">last</span> <span class="p">:</span><span class="o">=</span> <span class="s2">&quot;Ramanathan&quot;</span>
+    <span class="n">name</span> <span class="p">:</span><span class="o">=</span> <span class="n">first</span> <span class="o">+</span><span class="s2">&quot; &quot;</span><span class="o">+</span> <span class="n">last</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;My name is&quot;</span><span class="p">,</span><span class="n">name</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>字符串可以通过操作符 <code class="docutils literal notranslate"><span class="pre">+</span></code> 进行拼接，上面的程序输出</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">My</span> <span class="n">name</span> <span class="ow">is</span> <span class="n">Naveen</span> <span class="n">Ramanathan</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id16">
+<h3>2.2.8. 类型转换<a class="headerlink" href="#id16" title="永久链接至标题">¶</a></h3>
+<p>Go 对于显式声明非常严格，没有自动类型提升与转换。下面来看一个例子</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s2">&quot;fmt&quot;</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">55</span>      <span class="o">//</span><span class="nb">int</span>
+    <span class="n">j</span> <span class="p">:</span><span class="o">=</span> <span class="mf">67.8</span>    <span class="o">//</span><span class="n">float64</span>
+    <span class="nb">sum</span> <span class="p">:</span><span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">//</span><span class="nb">int</span> <span class="o">+</span> <span class="n">float64</span> <span class="ow">not</span> <span class="n">allowed</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="nb">sum</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>上面的运算操作在 C 语言中是合法的，但是 Go 语言中无法运行。<code class="docutils literal notranslate"><span class="pre">i</span></code> 的类型是 <code class="docutils literal notranslate"><span class="pre">int</span></code> ，而 <code class="docutils literal notranslate"><span class="pre">j</span></code> 的类型是 <code class="docutils literal notranslate"><span class="pre">float64</span></code>。尝试将两个不同类型的数加在一起会抛出异常</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">main</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span> <span class="n">invalid</span> <span class="n">operation</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="p">(</span><span class="n">mismatched</span> <span class="n">types</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">float64</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>为了解决这个问题，需要保持变量 <code class="docutils literal notranslate"><span class="pre">i</span></code> 与 <code class="docutils literal notranslate"><span class="pre">j</span></code> 类型一致。现在将 <code class="docutils literal notranslate"><span class="pre">j</span></code> 转化为 <code class="docutils literal notranslate"><span class="pre">int</span></code> 类型</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s2">&quot;fmt&quot;</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">55</span>      <span class="o">//</span><span class="nb">int</span>
+    <span class="n">j</span> <span class="p">:</span><span class="o">=</span> <span class="mf">67.8</span>    <span class="o">//</span><span class="n">float64</span>
+    <span class="nb">sum</span> <span class="p">:</span><span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">//</span><span class="n">j</span> <span class="ow">is</span> <span class="n">converted</span> <span class="n">to</span> <span class="nb">int</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="nb">sum</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>运行上面的程序，会输出 <code class="docutils literal notranslate"><span class="pre">122</span></code>。</p>
+<p>变量赋值也是如此，需要显式声明变量类型</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s2">&quot;fmt&quot;</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">10</span>
+    <span class="n">var</span> <span class="n">j</span> <span class="n">float64</span> <span class="o">=</span> <span class="n">float64</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="o">//</span><span class="n">this</span> <span class="n">statement</span> <span class="n">will</span> <span class="ow">not</span> <span class="n">work</span> <span class="n">without</span> <span class="n">explicit</span> <span class="n">conversion</span>
+
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;j&quot;</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>程序中将变量 <code class="docutils literal notranslate"><span class="pre">i</span></code> 转换为 <code class="docutils literal notranslate"><span class="pre">float64</span></code> 类型，然后赋值给变量 <code class="docutils literal notranslate"><span class="pre">j</span></code>。如果这里直接复制而不做类型转化的话，程序会报错。</p>
+</div>
+</div>
+<div class="section" id="id17">
+<h2>2.3. 常量<a class="headerlink" href="#id17" title="永久链接至标题">¶</a></h2>
 <p><a class="reference external" href="#">返回顶部⬆︎</a></p>
 </div>
 </div>
