@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
    :caption: 《Golang 入门教程》
 
-Golang 专栏
+Golang
 #############
 
 Golang 入门教程

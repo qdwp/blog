@@ -627,7 +627,42 @@
 </div>
 <div class="section" id="id17">
 <h2>2.3. 常量<a class="headerlink" href="#id17" title="永久链接至标题">¶</a></h2>
+<div class="section" id="id18">
+<h3>2.3.1. 定义<a class="headerlink" href="#id18" title="永久链接至标题">¶</a></h3>
+<p>Go 中的常量表示一些固定的值，如： <code class="docutils literal notranslate"><span class="pre">5</span></code>，<code class="docutils literal notranslate"><span class="pre">-89</span></code>，<code class="docutils literal notranslate"><span class="pre">&quot;I</span> <span class="pre">love</span> <span class="pre">Go&quot;</span></code>，<code class="docutils literal notranslate"><span class="pre">67.89</span></code> 等等。</p>
+<p>看下面这段代码</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">a</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">var</span> <span class="n">b</span> <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;I love Go&quot;</span>
+</pre></div>
+</div>
+<p>上述代码声明了两个常量 <code class="docutils literal notranslate"><span class="pre">a</span></code> 和 <code class="docutils literal notranslate"><span class="pre">b</span></code> 。Go 语言中声明常量的方式一般是使用关键字 <code class="docutils literal notranslate"><span class="pre">const</span></code> ，虽然上面的代码中没有明确使用关键字声明，但是它们在 Go 中仍然表示常量。</p>
+<p>常量按其命名来看，初始化后是不允许为其指派其它值的。因此，下面的程序程序会报错 <strong>cannot assign to a</strong>。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">main</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">const</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">55</span> <span class="o">//</span><span class="n">allowed</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mi">89</span> <span class="o">//</span><span class="n">reassignment</span> <span class="ow">not</span> <span class="n">allowed</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>常量的值应该是在编译的时候就确定的。因此，同样不允许将函数的返回值赋给一个常量，因为函数返回值是程序运行时才确定的。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s2">&quot;fmt&quot;</span>
+    <span class="s2">&quot;math&quot;</span>
+<span class="p">)</span>
+
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;Hello, playground&quot;</span><span class="p">)</span>
+    <span class="n">var</span> <span class="n">a</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">Sqrt</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">//</span><span class="n">allowed</span>
+    <span class="n">const</span> <span class="n">b</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">Sqrt</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">//</span><span class="ow">not</span> <span class="n">allowed</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>上面的程序中，尝试将 <code class="docutils literal notranslate"><span class="pre">math.Sqrt(4)</span></code> 的计算结果赋给常量 <code class="docutils literal notranslate"><span class="pre">b</span></code> ，这是不允许的。</p>
 <p><a class="reference external" href="#">返回顶部⬆︎</a></p>
+</div>
 </div>
 </div>
 
@@ -649,14 +684,15 @@
 
 <h3>导航</h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../../category/golang.html">Golang 专栏</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../category/golang.html">Golang</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../category/golang.html#id1">Golang 入门教程</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../category/golang.html#id2">工具 &amp; 答疑</a></li>
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../category/database.html">数据库专栏</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../category/database.html">数据存储</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../category/mq.html">消息队列</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../category/book.html">读书笔记</a></li>
@@ -666,7 +702,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../../category/golang.html">Golang 专栏</a><ul>
+  <li><a href="../../category/golang.html">Golang</a><ul>
       <li>Previous: <a href="01-introduction.html" title="上一章">1. 介绍</a></li>
       <li>Next: <a href="03-func-package.html" title="下一章">3. 函数和包</a></li>
   </ul></li>

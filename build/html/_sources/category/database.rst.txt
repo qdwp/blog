@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
     :caption: 《Go 标准库使用手册》学习笔记
 
-数据库专栏
+数据存储
 #############
 
 
@@ -21,6 +21,9 @@ MySQL
     /contents/database/mysql-optimize-02
     /contents/database/mysql2pg
 
+
+Redis
+============
 
 
 \ `返回顶部⬆︎ <#>`_\

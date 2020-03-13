@@ -9,6 +9,7 @@
 DUNWEI’ Blog
 ####################
 
+
 编程语言
 ====================
 
@@ -17,7 +18,8 @@ DUNWEI’ Blog
 
    category/golang
 
-数据库与缓存
+
+数据存储与中间件
 ====================
 
 
@@ -25,6 +27,8 @@ DUNWEI’ Blog
    :maxdepth: 2
 
    category/database
+   category/mq
+
 
 
 读书笔记

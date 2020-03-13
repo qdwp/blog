@@ -699,6 +699,59 @@ Go 对于显式声明非常严格，没有自动类型提升与转换。下面�
 常量
 ============
 
+定义
+------------
+
+Go 中的常量表示一些固定的值，如： ``5``，``-89``，``"I love Go"``，``67.89`` 等等。
+
+看下面这段代码
+
+::
+
+    var a int = 50
+    var b string = "I love Go"
+
+上述代码声明了两个常量 ``a`` 和 ``b`` 。Go 语言中声明常量的方式一般是使用关键字 ``const`` ，虽然上面的代码中没有明确使用\
+关键字声明，但是它们在 Go 中仍然表示常量。
+
+常量按其命名来看，初始化后是不允许为其指派其它值的。因此，下面的程序程序会报错 **cannot assign to a**。
+
+::
+
+    package main
+
+    func main() {
+        const a = 55 //allowed
+        a = 89 //reassignment not allowed
+    }
+
+常量的值应该是在编译的时候就确定的。因此，同样不允许将函数的返回值赋给一个常量，因为函数返回值是程序运行时才确定的。
+
+::
+
+    package main
+
+    import (
+        "fmt"
+        "math"
+    )
+
+    func main() {
+        fmt.Println("Hello, playground")
+        var a = math.Sqrt(4)//allowed
+        const b = math.Sqrt(4)//not allowed
+    }
+
+上面的程序中，尝试将 ``math.Sqrt(4)`` 的计算结果赋给常量 ``b`` ，这是不允许的。
+
+
+
+
+
+
+
+
+
 
 
 \ `返回顶部⬆︎ <#>`_\
