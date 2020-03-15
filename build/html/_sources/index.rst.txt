@@ -42,6 +42,15 @@ DUNWEI’ Blog
     category/book
 
 
+About Me
+============
+
+.. toctree::
+    :maxdepth: 1
+
+    category/about
+
+
 .. Indices and tables
     ==================
 

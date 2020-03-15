@@ -1,0 +1,143 @@
+.. _01-start:
+
+
+工作队列
+######################
+
+在本节中，我们将创建一个工作队列，用于在多个工作者（消费者）之间分配耗时任务。
+
+工作队列（又称：任务队列），背后的主旨是避免立即执行资源密集型任务，且必须等待其运行结束。相对地，我们计划将任务推后完成。\
+我们将任务包装成消息发送到队列中，后台的工作进程会将任务弹出并最终执行任务处理。当你运行多个工作进程时，它们之间将共享任务。
+
+这个概念在 Web 程序中尤为有用，因为在一个 HTTP 短时窗口中处理复杂的任务是不现实的。
+
+
+准备
+------------
+
+上一节我们发送了一条包含 ``Hello World!`` 的消息。现在来发送一条代表复杂任务的字符串。我们没有实际的任务操作，诸如调整图片大小，\
+渲染 pdf 文件等。所以我们使用 ``time.Sleep`` 方法假装自己很忙。我们将字符串中的点的个数作为消息的复杂度，每一个点都被认为是\
+工作 1 秒钟。例如，虚拟的任务描述 ``Hello...`` 会占用 3 秒钟。
+
+我们稍微改动一下上一节中的 ``send.go`` 文件，允许从命令行发送任意消息字符串。这个修改后的程序会将任务安排到工作队列中，\
+我们将其命名为 ``new_task.go``。
+
+::
+
+    body := bodyFrom(os.Args)
+    err = ch.Publish(
+      "",           // exchange
+      q.Name,       // routing key
+      false,        // mandatory
+      false,
+      amqp.Publishing {
+        DeliveryMode: amqp.Persistent,
+        ContentType:  "text/plain",
+        Body:         []byte(body),
+      })
+    failOnError(err, "Failed to publish a message")
+    log.Printf(" [x] Sent %s", body)
+
+还有 bodyFrom 函数:
+
+::
+
+    func bodyFrom(args []string) string {
+        var s string
+        if (len(args) < 2) || os.Args[1] == "" {
+            s = "hello"
+        } else {
+            s = strings.Join(args[1:], " ")
+        }
+        return s
+    }
+
+原先的 ``receive.go`` 文件也需作一些改动：程序需要为消息体中的每一个点都模拟一个耗时 1 秒的任务。新的程序会打印消息并执行任务，\
+所以称其为 ``worker.go``。
+
+::
+
+    msgs, err := ch.Consume(
+      q.Name, // queue
+      "",     // consumer
+      true,   // auto-ack
+      false,  // exclusive
+      false,  // no-local
+      false,  // no-wait
+      nil,    // args
+    )
+    failOnError(err, "Failed to register a consumer")
+
+    forever := make(chan bool)
+
+    go func() {
+      for d := range msgs {
+        log.Printf("Received a message: %s", d.Body)
+        dot_count := bytes.Count(d.Body, []byte("."))
+        t := time.Duration(dot_count)
+        time.Sleep(t * time.Second)
+        log.Printf("Done")
+      }
+    }()
+
+    log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+    <-forever
+
+注意这里我们模拟了执行任务消耗的时间。
+
+运行上面的程序代码
+
+::
+
+    go run worker.go
+
+::
+
+    go run new_task.go
+
+
+循环调度
+-----------------
+
+使用任务队列的优点是可以轻松的进行并行操作。如果任务造成了堆积，只需要增加工作者（消费者）就可以了，而且这种扩展的方式很简单。
+
+首先，同时运行两个 ``worker.go`` 脚本，它们都会从队列中获得消息。实际上是不是这样呢？
+
+你需要打开三个控制台窗口，其中两个运行 worker.go 脚本，表示有两个消费者：``C1`` 和 ``C2``。
+
+第一个控制台
+
+::
+
+    # shell 1
+    go run worker.go
+    # => [*] Waiting for messages. To exit press CTRL+C
+
+第二个控制台
+
+::
+
+    # shell 2
+    go run worker.go
+    # => [*] Waiting for messages. To exit press CTRL+C
+
+在第三个控制台中我们来生产新的消息任务。当你启动消费者后，可以在此发布新消息
+
+::
+
+    # shell 3
+    go run new_task.go First message.
+    go run new_task.go Second message..
+    go run new_task.go Third message...
+    go run new_task.go Fourth message....
+    go run new_task.go Fifth message.....
+
+
+
+
+
+
+
+
+
+\ `返回顶部⬆︎ <#>`_\
