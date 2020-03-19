@@ -3,6 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
     :caption: 《Go 标准库使用手册》学习笔记
+    :numbered:
 
 数据存储
 #############
@@ -14,9 +15,10 @@ MySQL
 
 .. toctree::
     :maxdepth: 1
-    :numbered:
     :glob:
 
+    /contents/database/mysql-base-01
+    /contents/database/mysql-base-02
     /contents/database/mysql-optimize-01
     /contents/database/mysql-optimize-02
     /contents/database/mysql2pg
