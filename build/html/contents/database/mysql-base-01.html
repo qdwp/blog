@@ -47,19 +47,17 @@
 <p>TCP 握手后保持连接，默认 8 小时。所以尽量使用长连接或连接池操作。</p>
 <ul class="simple">
 <li><p>定期断开长连接，或在大内存查询操作后断开。视业务情况而定</p></li>
-<li><p>MySQL 5.7+ 开始，执行 mysql_reset_connect 重置连接</p></li>
+<li><p>MySQL 5.7+ 开始，执行 <code class="docutils literal notranslate"><span class="pre">mysql_reset_connect</span></code> 重置连接</p></li>
 </ul>
 </div>
 <div class="section" id="id2">
 <h2>查询缓存<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
-<blockquote>
-<div><p>已执行过的 SQL 会以 KV 的形式缓存下来，不建议使用</p>
+<p>已执行过的 SQL 会以 KV 的形式缓存下来，不建议使用</p>
 <ul class="simple">
 <li><p>更新表操作会清空缓存</p></li>
 <li><p>静态配置标表比较适合使用查询缓存</p></li>
 <li><p>MySQL 8.0+ 版本取消了查询缓存</p></li>
 </ul>
-</div></blockquote>
 </div>
 <div class="section" id="id3">
 <h2>分析器<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
@@ -72,7 +70,7 @@
 <h2>优化器<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
 <ul class="simple">
 <li><p>决定选择使用索引</p></li>
-<li><p>连表查询 <code class="docutils literal notranslate"><span class="pre">join</span></code> 时，决定表连接顺序</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">join</span></code> 连表查询时，决定表连接顺序</p></li>
 </ul>
 </div>
 <div class="section" id="id5">
@@ -127,6 +125,10 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../category/mq.html">消息队列</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../category/cloud.html">容器</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../category/cloud.html#id2">云与云存储</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../category/book.html">读书笔记</a></li>

@@ -27,5 +27,11 @@ MySQL
 Redis
 ============
 
+.. toctree::
+    :maxdepth: 1
+    :glob:
+
+    /contents/database/redis-geohash
+
 
 \ `返回顶部⬆︎ <#>`_\
