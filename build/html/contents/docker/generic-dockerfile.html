@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
   <head>
     <meta charset="utf-8" />
-    <title>基于 Alpine 的通用 Dockerfile &#8212; INDEX 1.0.0 文档</title>
+    <title>基于 Alpine 的通用 Dockerfile 模板 &#8212; INDEX 1.0.0 文档</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -34,17 +34,18 @@
           <div class="body" role="main">
             
   <div class="section" id="alpine-dockerfile">
-<span id="generic-dockerfile"></span><h1>基于 Alpine 的通用 Dockerfile<a class="headerlink" href="#alpine-dockerfile" title="永久链接至标题">¶</a></h1>
+<span id="generic-dockerfile"></span><h1>基于 Alpine 的通用 Dockerfile 模板<a class="headerlink" href="#alpine-dockerfile" title="永久链接至标题">¶</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">alpine</span><span class="p">:</span><span class="mf">3.10</span>
 
 <span class="n">MAINTAINER</span> <span class="n">DUNWEI</span> <span class="s2">&quot;dunwei.work@gmail.com&quot;</span>
 
 <span class="c1"># 使用清华软件源</span>
-<span class="c1"># RUN echo &quot;https://mirror.tuna.tsinghua.edu.cn/alpine/v3.4/main/&quot; &gt; /etc/apk/repositories</span>
+<span class="c1"># RUN echo https://mirror.tuna.tsinghua.edu.cn/alpine/v3.10/main/ &gt; /etc/apk/repositories &amp;&amp; \</span>
+<span class="c1">#     echo https://mirror.tuna.tsinghua.edu.cn/alpine/v3.10/community/ &gt;&gt; /etc/apk/repositories</span>
 
 <span class="c1"># 使用阿里云软件源</span>
-<span class="n">RUN</span> <span class="n">echo</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">mirrors</span><span class="o">.</span><span class="n">aliyun</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">alpine</span><span class="o">/</span><span class="n">v3</span><span class="o">.</span><span class="mi">10</span><span class="o">/</span><span class="n">main</span><span class="o">/</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">apk</span><span class="o">/</span><span class="n">repositories</span> <span class="o">&amp;&amp;</span> \
-    <span class="n">echo</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">mirrors</span><span class="o">.</span><span class="n">aliyun</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">alpine</span><span class="o">/</span><span class="n">v3</span><span class="o">.</span><span class="mi">10</span><span class="o">/</span><span class="n">community</span><span class="o">/</span> <span class="o">&gt;&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">apk</span><span class="o">/</span><span class="n">repositories</span>
+<span class="c1"># RUN echo http://mirrors.aliyun.com/alpine/v3.10/main/ &gt; /etc/apk/repositories &amp;&amp; \</span>
+<span class="c1">#     echo http://mirrors.aliyun.com/alpine/v3.10/community/ &gt;&gt; /etc/apk/repositories</span>
 
 <span class="c1"># root 用户密码</span>
 <span class="n">ENV</span> <span class="n">ROOT_PASSWD</span><span class="o">=</span><span class="n">QDWp9995_</span>
@@ -59,8 +60,11 @@
 <span class="c1"># RUN chmod 777 /work/executefile</span>
 
 
-<span class="c1"># 修改时区</span>
-<span class="n">RUN</span> <span class="n">apk</span> <span class="n">update</span> \
+<span class="c1"># 更新软件源 &amp;&amp; 修改时区</span>
+
+<span class="n">RUN</span> <span class="n">echo</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">mirrors</span><span class="o">.</span><span class="n">aliyun</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">alpine</span><span class="o">/</span><span class="n">v3</span><span class="o">.</span><span class="mi">10</span><span class="o">/</span><span class="n">main</span><span class="o">/</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">apk</span><span class="o">/</span><span class="n">repositories</span> \
+    <span class="o">&amp;&amp;</span> <span class="n">echo</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">mirrors</span><span class="o">.</span><span class="n">aliyun</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">alpine</span><span class="o">/</span><span class="n">v3</span><span class="o">.</span><span class="mi">10</span><span class="o">/</span><span class="n">community</span><span class="o">/</span> <span class="o">&gt;&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">apk</span><span class="o">/</span><span class="n">repositories</span> \
+    <span class="o">&amp;&amp;</span> <span class="n">apk</span> <span class="n">update</span> \
     <span class="o">&amp;&amp;</span> <span class="n">apk</span> <span class="n">upgrade</span> \
     <span class="o">&amp;&amp;</span> <span class="n">apk</span> <span class="n">add</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">cache</span> <span class="n">tzdata</span> \
     <span class="o">&amp;&amp;</span> <span class="n">ln</span> <span class="o">-</span><span class="n">sf</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">zoneinfo</span><span class="o">/</span><span class="n">Asia</span><span class="o">/</span><span class="n">Shanghai</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">localtime</span> \

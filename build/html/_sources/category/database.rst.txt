@@ -17,11 +17,11 @@ MySQL
     :maxdepth: 1
     :glob:
 
-    /contents/database/mysql-base-01
-    /contents/database/mysql-base-02
-    /contents/database/mysql-optimize-01
-    /contents/database/mysql-optimize-02
-    /contents/database/mysql2pg
+    /contents/mysql/mysql-base-01
+    /contents/mysql/mysql-base-02
+    /contents/mysql/mysql-optimize-01
+    /contents/mysql/mysql-optimize-02
+    /contents/mysql/mysql2pg
 
 
 Redis
@@ -31,7 +31,7 @@ Redis
     :maxdepth: 1
     :glob:
 
-    /contents/database/redis-geohash
+    /contents/redis/redis-geohash
 
 
 \ `返回顶部⬆︎ <#>`_\

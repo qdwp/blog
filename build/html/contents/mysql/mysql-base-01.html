@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>[基础] 一条查询 SQL 语句是怎么执行的 &#8212; INDEX 1.0.0 文档</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="next" title="[基础] 一条更新 SQL 语句是怎么执行的" href="mysql-base-02.html" />
+    <link rel="prev" title="数据存储" href="../../category/database.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="sql">
+<span id="base01"></span><h1>[基础] 一条查询 SQL 语句是怎么执行的<a class="headerlink" href="#sql" title="永久链接至标题">¶</a></h1>
+<p>示例语句</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="o">*</span> <span class="n">FROM</span> <span class="n">T</span> <span class="n">WHERE</span> <span class="n">ID</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>在理解 MySQL 查询数据过程之前，先看一下 MySQL 的基本架构示意图</p>
+<img alt="../../_images/mysql-001.png" src="../../_images/mysql-001.png" />
+<p>根据架构示意图，可以看到 MySQL 每个部分都做了什么</p>
+<div class="section" id="id1">
+<h2>连接器<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<p>TCP 握手后保持连接，默认 8 小时。所以尽量使用长连接或连接池操作。</p>
+<ul class="simple">
+<li><p>定期断开长连接，或在大内存查询操作后断开。视业务情况而定</p></li>
+<li><p>MySQL 5.7+ 开始，执行 <code class="docutils literal notranslate"><span class="pre">mysql_reset_connect</span></code> 重置连接</p></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>查询缓存<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p>已执行过的 SQL 会以 KV 的形式缓存下来，不建议使用</p>
+<ul class="simple">
+<li><p>更新表操作会清空缓存</p></li>
+<li><p>静态配置标表比较适合使用查询缓存</p></li>
+<li><p>MySQL 8.0+ 版本取消了查询缓存</p></li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h2>分析器<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<ul class="simple">
+<li><p>词法分析</p></li>
+<li><p>语法分析</p></li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h2>优化器<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<ul class="simple">
+<li><p>决定选择使用索引</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">join</span></code> 连表查询时，决定表连接顺序</p></li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h2>执行器<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<p>会在 SQL 执行前先判断执行权限，然后根据有无索引来执行 SQL</p>
+<p>比如</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="o">*</span> <span class="n">FROM</span> <span class="n">T</span> <span class="n">WHERE</span> <span class="n">ID</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt><strong>无索引</strong></dt><dd><ul class="simple">
+<li><p>调用引擎接口，读取表第 1 行。判断是否符合查询条件，符合则存入结果集；不符合则继续</p></li>
+<li><p>读取表下一行，重复上一步，直至遍历全表</p></li>
+<li><p>将结果集返回客户端</p></li>
+</ul>
+</dd>
+<dt><strong>有索引</strong></dt><dd><ul class="simple">
+<li><p>取符合索引条件的第一行，存入结果集</p></li>
+<li><p>取符合索引条件的下一行，存入结果集，直到没有符合条件的记录</p></li>
+<li><p>将结果集返回客户端</p></li>
+</ul>
+</dd>
+</dl>
+<p><a class="reference external" href="#">返回顶部⬆︎</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">INDEX</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../category/golang.html">Golang</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../category/database.html">数据存储</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../category/database.html#mysql">MySQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../category/database.html#redis">Redis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../category/mq.html">消息队列</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../category/cloud.html">容器</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../category/cloud.html#id2">云与云存储</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../category/book.html">读书笔记</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../category/about.html">关于我</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../category/database.html">数据存储</a><ul>
+      <li>Previous: <a href="../../category/database.html" title="上一章">数据存储</a></li>
+      <li>Next: <a href="mysql-base-02.html" title="下一章">[基础] 一条更新 SQL 语句是怎么执行的</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020; <a href="http://www.beian.miit.gov.cn">皖ICP备18013831号</a>.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
