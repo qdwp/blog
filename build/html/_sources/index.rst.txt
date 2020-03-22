@@ -10,14 +10,6 @@ DUNWEI’ Blog
 ####################
 
 
-编程语言
-====================
-
-.. toctree::
-   :maxdepth: 2
-
-   category/golang
-
 
 数据存储与中间件
 ====================
@@ -39,6 +31,14 @@ DUNWEI’ Blog
 
     category/cloud
 
+
+编程语言
+====================
+
+.. toctree::
+   :maxdepth: 2
+
+   category/golang
 
 
 读书笔记

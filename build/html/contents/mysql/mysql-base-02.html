@@ -57,7 +57,98 @@
 </div>
 <div class="section" id="id2">
 <h2>日志模块<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<div class="section" id="redo-log">
+<h3>redo log<a class="headerlink" href="#redo-log" title="永久链接至标题">¶</a></h3>
+<p>redo log 是 InnoDB 引擎中特有的。</p>
+<p>当有一条记录需要更新的时候，InnoDB 引擎会先把记录写到 redo log （就像是一个临时的黑板）中，并更新内存。然后，InnoDB 会在合适的时候将操作记录更新到磁盘。</p>
+<p>同时，redo log 的大小是固定的，所以空间不足且有新的记录更新时，需要擦除旧的日志记录。</p>
+<p>这就相当于在黑板上擦除旧的数据来给新的数据腾出空间。</p>
+<p>比如，配置 redo log 为一组 4 个文件，每个文件大小为 1GB。那么总共可以记录 4GB 的数据。</p>
+<img alt="../../_images/mysql-002.png" src="../../_images/mysql-002.png" />
+<p><strong>crash-safe</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>InnoDB 基于 redo log 日志，实现的在数据库发生异常重启后，仍能保证恢复之前的数据不丢失</p></li>
+<li><p>但是有一点，redo log 是物理日志，记录的是「数据页上发生了什么变化」，而非 SQL 本身</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="binlig">
+<h3>binlig<a class="headerlink" href="#binlig" title="永久链接至标题">¶</a></h3>
+<p>首先要知道，MySQL 数据库分为两块</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>一块是 Server 层，负责 MySQL 功能层面的事情</p></li>
+<li><p>一块是引擎层，负责存储相关的事情</p></li>
+</ul>
+</div></blockquote>
+<p>之前提到的 redo log 就是引擎层中，InnoDB 引擎特有的日志。而 Server 层也有自己的日志，就是 binlog（归档日志）。</p>
+<p>redo log 是在 InnoDB 作为插件加入 MySQL 后才有的，为的是实现 Server 层 binlog 没有的 crash-safe 能力。</p>
+</div>
+<div class="section" id="id3">
+<h3>两种日志对比<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<table class="colwidths-given docutils align-default" id="id6">
+<caption><span class="caption-text">Compare</span><a class="headerlink" href="#id6" title="永久链接至表格">¶</a></caption>
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 45%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head" rowspan="2"></th>
+<th class="head" rowspan="2"><p>redo log</p></th>
+<th class="head" rowspan="2"><p>binlog</p></th>
+</tr>
+<tr class="row-even"></tr>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>InnoDB 引擎特有的日志</p></td>
+<td><p>MySQL Server 层实现，所有引擎都可以使用</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>物理日志、记录的是数据页上做了什么修改</p></td>
+<td><p>逻辑日志，记录的是 SQL 语句的原始逻辑</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>固定空间大小，循环写入，会覆盖以前的日志数据</p></td>
+<td><p>追加写入，一个文件写满换下一个文件，不会覆盖以前的文件</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="mysql-innodb-update">
+<h2>MySQL 中 InnoDB 引擎执行 update 语句时的内部流程<a class="headerlink" href="#mysql-innodb-update" title="永久链接至标题">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">update</span> <span class="n">T</span> <span class="nb">set</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="o">+</span><span class="mi">1</span> <span class="n">where</span> <span class="n">ID</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>执行器找到引擎中 ID = 2 的这一行数据。ID 是主键，所以可以通过索引找到改行。如果这一行在内存中，直接返回。否则从磁盘中加载到内存，然后再返回</p></li>
+<li><p>执行器从引擎中取到数据，然后计算 c+1，得到新的行数据，调用引擎接口写入这行数据</p></li>
+<li><p>引擎层拿到数据并更新到内存后，将更新操作写入到 redo log，此时 redo log 处于 prepare 状态。然后告知执行器操作已完成，随时可以提交事务</p></li>
+<li><p>执行器生成操作记录写入 binlog，然后将 binlog 写入磁盘</p></li>
+<li><p>执行器调用引擎提交事务接口，引擎把刚刚写入的 redo log 改为 commit（提交）状态，更新操作完成</p></li>
+</ul>
+<img alt="../../_images/mysql-003.png" src="../../_images/mysql-003.png" />
+</div>
+<div class="section" id="id4">
+<h2>为什么要有两段式提交？<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<p>先看一下不使用两段式提交的情况，即先写 redo log 和 binlog 中的一个，然后再写另一个</p>
+<div class="section" id="redo-log-binlog">
+<h3>先写 redo log 后写 binlog<a class="headerlink" href="#redo-log-binlog" title="永久链接至标题">¶</a></h3>
+<p>假设在 redo log 写完后，binlog 还没写完的时候，MySQL 异常重启了。</p>
+<p>由于 redo log 是 crash-safe 的，MySQL 重启后能够恢复数据，对于上面的 update 语句，c + 1 部分已经完成了。</p>
+<p>而对于 binlog 来说，还没有写入完成，没有记录到此次的 update 操作。</p>
+<p>因此在归档数据库时就没有这次 update 变更语句，以后使用这个 binlog 来恢复数据时，恢复出来的数据在 ID = 2 这一行数据时错误的。</p>
+</div>
+<div class="section" id="binlog-redo-log">
+<h3>先写 binlog 后写redo log<a class="headerlink" href="#binlog-redo-log" title="永久链接至标题">¶</a></h3>
+<p>如果在 binlog 写完后 MySQL 发生了 crash ，由于 redo log 还没有写入，MySQL 重启后恢复这个事务无效，此时数据库中对于 ID =2 这行是没有经过 update 操作的。</p>
+<p>但是 binlog 已经记录过了，以后使用 binlog 来恢复数据库时，对于 ID = 2 这行就会多出一次 update 操作，会造成数据异常。</p>
+<p><strong>redo log 和 binlog 都可以用于表示事务的提交状态，而两段式提交就是为了保持这两个日志状态的逻辑一致性。</strong></p>
 <p><a class="reference external" href="#">返回顶部⬆︎</a></p>
+</div>
 </div>
 </div>
 
@@ -78,9 +169,6 @@
 
 
 <h3>导航</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../category/golang.html">Golang</a></li>
-</ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../category/database.html">数据存储</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../category/database.html#mysql">MySQL</a></li>
@@ -92,6 +180,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../category/cloud.html">容器</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../category/cloud.html#id2">云与云存储</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../category/golang.html">Golang</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../category/book.html">读书笔记</a></li>
