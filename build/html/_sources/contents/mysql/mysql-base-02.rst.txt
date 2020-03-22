@@ -55,7 +55,7 @@ redo log 是 InnoDB 引擎中特有的。
     - 但是有一点，redo log 是物理日志，记录的是「数据页上发生了什么变化」，而非 SQL 本身
 
 
-binlig
+binlog
 ----------------
 
 首先要知道，MySQL 数据库分为两块
