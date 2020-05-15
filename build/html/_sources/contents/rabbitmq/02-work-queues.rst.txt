@@ -105,7 +105,7 @@
 
 你需要打开三个控制台窗口，其中两个运行 ``worker.go`` 脚本，表示有两个消费者：``C1`` 和 ``C2``。
 
-.. image:: ../../_static/images/rabbit-02-01.png
+.. image:: ../../_static/images/common/rabbit-02-01.png
 
 第一个控制台
 
@@ -285,7 +285,7 @@ ack（acknowledgement）来告知 RabbitMQ 已经接收了一个特定的消息�
 
 这是由于 RabbitMQ 只是单纯地在消息进入队列时进行调度分派，而不会关心消费者未确认完成的消息数量。只是忙目地将第 N 条消息指派给第 N 个消费者。
 
-.. image:: ../../_static/images/rabbit-02-02.png
+.. image:: ../../_static/images/common/rabbit-02-02.png
 
 为了解决这个问题，我们可以将预指派计数设置为 1 。这会告诉 RabbitMQ 同一时间不要给一个 ``worker`` 指派多条消息。或者说，在一个 \
 ``worker`` 没有处理完并确认上一条消息之前，不要给它指派新的消息。而是将消息指派给下一个不忙的 ``worker`` 。

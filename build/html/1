@@ -1,0 +1,4 @@
+usage: server.py [-h] [--cgi] [--bind ADDRESS] [--directory DIRECTORY] [port]
+server.py: error: unrecognized arguments: /etc/null
+usage: server.py [-h] [--cgi] [--bind ADDRESS] [--directory DIRECTORY] [port]
+server.py: error: unrecognized arguments: /etc/null

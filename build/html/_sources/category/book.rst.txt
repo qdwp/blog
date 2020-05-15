@@ -8,6 +8,19 @@
 #############
 
 
+
+《趣学算法》学习笔记
+========================================
+
+.. toctree::
+    :maxdepth: 1
+    :numbered:
+    :glob:
+
+    /contents/book-algorithms-01/1-intro
+    /contents/book-algorithms-01/2-greedy-algorithm
+
+
 《Go 标准库使用手册》学习笔记
 ===================================
 
@@ -19,17 +32,6 @@
 
     /contents/go-standard-library-cookbook/*
 
-
-
-《Effective Java 第三版》学习笔记
-========================================
-
-.. toctree::
-    :maxdepth: 1
-    :numbered:
-    :glob:
-
-    /contents/effective-java/*
 
 
 \ `返回顶部⬆︎ <#>`_\

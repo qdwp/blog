@@ -47,7 +47,7 @@ redo log 是 InnoDB 引擎中特有的。
 
 比如，配置 redo log 为一组 4 个文件，每个文件大小为 1GB。那么总共可以记录 4GB 的数据。
 
-.. image:: ../../_static/images/mysql-002.png
+.. image:: ../../_static/images/common/mysql-002.png
 
 **crash-safe**
 
@@ -111,7 +111,7 @@ MySQL 中 InnoDB 引擎执行 update 语句时的内部流程
 - 执行器生成操作记录写入 binlog，然后将 binlog 写入磁盘
 - 执行器调用引擎提交事务接口，引擎把刚刚写入的 redo log 改为 commit（提交）状态，更新操作完成
 
-.. image:: ../../_static/images/mysql-003.png
+.. image:: ../../_static/images/common/mysql-003.png
 
 
 为什么要有两段式提交？

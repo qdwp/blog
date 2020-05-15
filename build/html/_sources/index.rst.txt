@@ -11,7 +11,7 @@ DUNWEI’ Blog
 
 
 
-数据存储与中间件
+数据存储与容器云
 ====================
 
 
@@ -20,17 +20,16 @@ DUNWEI’ Blog
 
    category/database
    category/mq
+   category/cloud
 
 
-
-容器与云
-===========
+数据结构与算法
+====================
 
 .. toctree::
-    :maxdepth: 2
+   :maxdepth: 2
 
-    category/cloud
-
+   category/ds
 
 编程语言
 ====================

@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>1. 图及其相关描述 &#8212; INDEX 1.0.0 文档</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="next" title="Golang" href="../../category/golang.html" />
+    <link rel="prev" title="数据结构" href="../../category/ds.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="graph">
+<span id="id1"></span><h1>1. 图及其相关描述<a class="headerlink" href="#graph" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id2">
+<h2>1.1. 介绍<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p><strong>图</strong>：表示一组对象之间的成对关系。</p>
+<p>学习图，首先要知道两个定义：</p>
+<ul class="simple">
+<li><p><strong>顶点</strong> （也叫结点）</p></li>
+<li><p><strong>边</strong> （也叫弧）</p></li>
+</ul>
+<img alt="../../_images/graph-01.jpg" src="../../_images/graph-01.jpg" />
+<p>图一般分为两类：</p>
+<ul class="simple">
+<li><p>有向图：拥有有序的结点对</p></li>
+<li><p>无向图：拥有无序的结点对</p></li>
+</ul>
+<img alt="../../_images/graph-02.jpg" src="../../_images/graph-02.jpg" />
+</div>
+<div class="section" id="id3">
+<h2>1.2. 图的表示<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<p>通常使用两种方式表示图的数据结构：</p>
+<ul class="simple">
+<li><p>邻接矩阵</p></li>
+<li><p>邻接表</p></li>
+</ul>
+<div class="section" id="id4">
+<h3>1.2.1. 邻接矩阵<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
+<p>将有 V 个结点的图放入 VxV 的 0-1 矩阵中。A<sub>ij</sub> =1 表示结点 i 与结点 j 相连。</p>
+<img alt="../../_images/graph-03.jpg" src="../../_images/graph-03.jpg" />
+<p>对角线都为 0 表示该邻接矩阵所对应的图不包含任何自循环。这个邻接矩阵只有在表示无向图时才是正确的。</p>
+</div>
+<div class="section" id="id5">
+<h3>1.2.2. 邻接表<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h3>
+<p>邻接表使用数组表示。数组的长度为图中结点的个数。数组的元素为一个单链表，链表内的结点表示与当前下标相连通的结点。</p>
+<img alt="../../_images/graph-04.jpg" src="../../_images/graph-04.jpg" />
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">INDEX</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../category/database.html">数据存储</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../category/mq.html">消息队列</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../category/cloud.html">容器</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../category/cloud.html#id2">云与云存储</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../category/ds.html">数据结构</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../category/ds.html#id2">图论</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../category/golang.html">Golang</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../category/book.html">读书笔记</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../category/about.html">关于我</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../category/ds.html">数据结构</a><ul>
+      <li>Previous: <a href="../../category/ds.html" title="上一章">数据结构</a></li>
+      <li>Next: <a href="../../category/golang.html" title="下一章">Golang</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020; <a href="http://www.beian.miit.gov.cn">皖ICP备18013831号</a>.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

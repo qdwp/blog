@@ -31,7 +31,7 @@ Golang 入门教程
    /contents/go-tutorial/14-file
 
 
-工具 & 答疑
+效率 & 工具
 =======================
 
 .. toctree::
@@ -39,6 +39,7 @@ Golang 入门教程
    :numbered:
    :glob:
 
+   /contents/go-tool/effective
    /contents/go-tool/get-x
 
 
