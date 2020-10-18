@@ -16,28 +16,38 @@ DUNWEI’ Blog
 
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   category/database
-   category/mq
-   category/cloud
+    category/database
+    category/mq
+    category/cloud
 
 
 数据结构与算法
 ====================
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   category/ds
+    category/ds
 
 编程语言
 ====================
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   category/golang
+    category/golang
+
+人工智能
+=================
+
+人工智能学习笔记。
+
+.. toctree::
+    :maxdepth: 2
+
+    category/ml
 
 
 读书笔记
