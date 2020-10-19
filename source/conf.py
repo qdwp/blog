@@ -43,11 +43,14 @@ master_doc = 'index'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+# In order to support `sphinx.ext.mathjax`, need `npm install mathjax`.
+# In order to support `sphinx.ext.imgmath`, need `sudo pacman -S dvipng dvisvgm`.
 extensions = [
     'chinese_search',
     "sphinx.ext.autodoc",
     'sphinx.ext.viewcode',
-    "sphinx.ext.intersphinx"
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.mathjax'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

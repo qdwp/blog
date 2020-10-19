@@ -20,7 +20,7 @@
     #     echo http://mirrors.aliyun.com/alpine/v3.10/community/ >> /etc/apk/repositories
 
     # root 用户密码
-    ENV ROOT_PASSWD=QDWp9995_
+    ENV ROOT_PASSWD=password
 
     # 指定当前工作目录
     # WORKDIR /work
