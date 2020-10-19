@@ -19,3 +19,7 @@ python3 -m pip install sphinx sphinx-autobuild sphinx_rtd_theme recommonmark
 ```bash
 make html
 ```
+
+## 注意
+
+编译后的 `build/html` 用于部署博客页面，目录内需要创建 `.nojetyll` 文件，避免出现 `css`、`js` 文件 `404` 无法访问的问题。
