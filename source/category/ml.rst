@@ -10,8 +10,6 @@
 
 .. toctree::
     :maxdepth: 1
-    :numbered:
-    :glob:
 
     /contents/machine-learning/ml-intro
 
