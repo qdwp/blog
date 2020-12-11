@@ -23,6 +23,7 @@ MySQL
     /contents/mysql/mysql-optimize-02
     /contents/mysql/mysql2pg
     /contents/mysql/index-3starts
+    /contents/mysql/clusted-index
 
 Redis
 ============
