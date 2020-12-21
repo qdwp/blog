@@ -11,7 +11,7 @@
 
 在理解 MySQL 查询数据过程之前，先看一下 MySQL 的基本架构示意图
 
-.. image:: ../../_static/images/common/mysql-001.png
+.. image:: /_static/images/mysql/mysql-001.png
 
 根据架构示意图，可以看到 MySQL 每个部分都做了什么
 

@@ -9,8 +9,8 @@
 #############
 
 
-MySQL
-===========
+MySQL  --  数据库引擎、索引结构、实现原理
+==============================================
 
 
 .. toctree::
@@ -19,14 +19,14 @@ MySQL
 
     /contents/mysql/mysql-base-01
     /contents/mysql/mysql-base-02
+    /contents/mysql/db-index
+    /contents/mysql/index-3starts
     /contents/mysql/mysql-optimize-01
     /contents/mysql/mysql-optimize-02
     /contents/mysql/mysql2pg
-    /contents/mysql/index-3starts
-    /contents/mysql/clusted-index
 
-Redis
-============
+Redis  --  底层实现、应用场景
+==================================
 
 .. toctree::
     :maxdepth: 1

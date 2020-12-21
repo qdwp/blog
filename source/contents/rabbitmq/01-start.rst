@@ -48,7 +48,7 @@ RabbitMQ 以及一般传递的消息都使用了一些术语。
 
 下图中，"P" 表示生产者，"C" 表示消费者，中间的盒子表示队列-RabbitMQ为消费者持有的消息缓存区。
 
-.. image:: ../../_static/images/common/rabbit-01-01.png
+.. image:: /_static/images/rabbit/rabbit-01-01.png
 
 **安装 Go 客户端组件库**
 
@@ -62,7 +62,7 @@ RabbitMQ 以及一般传递的消息都使用了一些术语。
 发送消息
 --------------
 
-.. image:: ../../_static/images/common/rabbit-01-02.png
+.. image:: /_static/images/rabbit/rabbit-01-02.png
 
 我们将 ``send.go`` 定为生产者（发送方），将 ``receive.go`` 定为消费者（接收方）。生产者会连接到 RabbitMQ，发送一条消息，\
 然后退出。示例程序如下：
@@ -127,7 +127,7 @@ RabbitMQ 以及一般传递的消息都使用了一些术语。
 
 消费者是相对对生产者而言的，它会监听 RabbitMQ 中的消息。与生产者仅仅发送一条消息不同，消费者会保持运行来监听并打印输出。
 
-.. image:: ../../_static/images/common/rabbit-01-03.png
+.. image:: /_static/images/rabbit/rabbit-01-03.png
 
 ::
 

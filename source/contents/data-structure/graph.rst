@@ -14,14 +14,14 @@
 - **顶点** （也叫结点）
 - **边** （也叫弧）
 
-.. image:: ../../_static/images/algorithms/graph-01.jpg
+.. image:: /_static/images/algorithms/graph-01.jpg
 
 图一般分为两类：
 
 - 有向图：拥有有序的结点对
 - 无向图：拥有无序的结点对
 
-.. image:: ../../_static/images/algorithms/graph-02.jpg
+.. image:: /_static/images/algorithms/graph-02.jpg
 
 
 图的表示
@@ -37,7 +37,7 @@
 
 将有 V 个结点的图放入 VxV 的 0-1 矩阵中。A\ :sub:`ij` \=1 表示结点 i 与结点 j 相连。
 
-.. image:: ../../_static/images/algorithms/graph-03.jpg
+.. image:: /_static/images/algorithms/graph-03.jpg
 
 对角线都为 0 表示该邻接矩阵所对应的图不包含任何自循环。这个邻接矩阵只有在表示无向图时才是正确的。
 
@@ -46,4 +46,4 @@
 
 邻接表使用数组表示。数组的长度为图中结点的个数。数组的元素为一个单链表，链表内的结点表示与当前下标相连通的结点。
 
-.. image:: ../../_static/images/algorithms/graph-04.jpg
+.. image:: /_static/images/algorithms/graph-04.jpg
