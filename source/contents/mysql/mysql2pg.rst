@@ -18,7 +18,7 @@ Microsoft Access，对于某些更改可能会觉得不习惯（比如不能使�
 * MySQL 使用 ``'`` 或 ``"`` 来引用数值（即 ``WHERE name = "John"``），这并不符合数据库标准。|pg| 只使用单引号 ``'``\
   （即 ``WHERE name = 'John'``）。|pg| 中双翼那红仅用于系统标识符；字段名，表名等（如 ``WHERE "last name" = 'Smith'``）。
 * MySQL 使用反引号 ````` 来引用系统标识符，这是绝对非数据库标准的。
-* |pg| 在比较字符串时会**区分大小写**。字段 "Smith" 与 "smith" 是不一样的。这与 MySQL 以及其它小型数据库系统\
+* |pg| 在比较字符串时会 **区分大小写** 。字段 "Smith" 与 "smith" 是不一样的。这与 MySQL 以及其它小型数据库系统\
   （如 Microsoft Access）有很大差异。在 |pg| 中，可以有以下操作：
 
   * 在查询时使用正确的大小写（即，``WHERE name = 'Smith'``）。

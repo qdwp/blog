@@ -4,8 +4,8 @@
 #############
 
 
-RabbitMQ
-==============
+RabbitMQ 入门介绍
+=====================
 
 
 .. toctree::
@@ -15,6 +15,7 @@ RabbitMQ
 
     /contents/rabbitmq/01-start
     /contents/rabbitmq/02-work-queues
+    /contents/rabbitmq/03-publish-subscribe
 
 
 \ `返回顶部⬆︎ <#>`_\

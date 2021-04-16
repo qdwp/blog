@@ -4,7 +4,6 @@
 ############
 
 **目录：**
-
     * `检查Golang版本`_
     * `接收程序参数`_
     * `使用 flag 包创建程序接口`_
@@ -74,7 +73,7 @@
 这个常量位于 ``$GOPATH/src/runtime/internal/sys/zversion.go`` 文件中。
 
 这个 ``.go`` 文件由 ``go dist`` 工具生成，并且由 ``go/src/cmd/dist/build.go`` 中\
-的 `findversion` 这个函数判定 Go 的版本，下面会详细说明。
+的 ``findversion`` 这个函数判定 Go 的版本，下面会详细说明。
 
 在判定 Go 版本的时候，优先级最高的是 ``$GOROOT/VERSION`` 文件，如果这个文件为空或不存\
 在的话，则查看 ``$GOROOT/VERSION.cache`` 文件。如果 ``$GOROOT/VERSION.cache`` \
