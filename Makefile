@@ -18,3 +18,9 @@ help:
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 	cp favicon.ico build/html/favicon.ico
+
+builddockerimage:
+	docker build --tag sphinx:4.5 .
+
+run:
+	docker run --rm -v ${PWD}:/docs sphinx:4.5 make html
